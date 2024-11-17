@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class DogAnimation extends JPanel {
+public class DogAnimation extends JPanel implements Animation{
     private BufferedImage spriteSheet;
     private BufferedImage[] idleFrames;
     private int currentFrame = 0; // Current frame in the animation
@@ -48,6 +48,8 @@ public class DogAnimation extends JPanel {
         animationTimer.start(); // Start the animation timer
     }
 
+
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -60,5 +62,25 @@ public class DogAnimation extends JPanel {
 
         // Draw the current frame of the Dog object
         g.drawImage(idleFrames[currentFrame], 50, 50, scaledWidth, scaledHeight, this); // Position at (50,50) for example
+    }
+
+    @Override
+    public void switchToIdle() {
+
+    }
+
+    @Override
+    public void switchToWalking() {
+
+    }
+
+    @Override
+    public void switchToSleeping() {
+
+    }
+
+    @Override
+    public void switchToHurt() {
+
     }
 }

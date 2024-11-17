@@ -20,7 +20,7 @@ public class MainScreen extends JFrame{
         JLabel label = new JLabel("LOGIN MENU", SwingConstants.CENTER);
         label.setFont(new Font("SANS", Font.BOLD, 24));
         JPanel panel = new JPanel();
-        panel.setBackground(Color.LIGHT_GRAY);
+//        panel.setBackground;
 
         JButton parentalButton = new JButton("Parental Controls");
         JButton startGameButton = new JButton("Start Game");
@@ -31,7 +31,7 @@ public class MainScreen extends JFrame{
         panel.add(parentalButton);
 
         this.add(panel);
-        Dog dog = new Dog("John", this);
+//        Dog dog = new Dog("John", this);
         setVisible(true); // Make the JFrame visible
     }
 }
