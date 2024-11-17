@@ -1,6 +1,10 @@
 package Pets;
 
+import java.awt.*;
+
 public abstract class Pet {
+
+    private Image[] idleFrames;
     private int currentHealth;
     private int maxHealth;
     private int sleepLevel;
