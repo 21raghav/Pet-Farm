@@ -4,8 +4,18 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The DataManager class handles reading and writing pet data to and from a CSV file.
+ * It provides utility methods to initialize the CSV file and retrieve attributes
+ * for specific pets based on their ID.
+ */
 public class DataManager {
 
+    /**
+     * Writes default pet data to a CSV file located at "Data/State.csv".
+     * If the file or directory doesn't exist, this method creates it.
+     * The CSV file contains a header row followed by default attributes for pets.
+     */
     private static void writePetDataToCsv() {
         // Define the data for the CSV file
         String[] headers = {"petID", "happiness", "hunger", "health", "sleep"};
@@ -35,11 +45,14 @@ public class DataManager {
     }
 
     /**
+     * Retrieves the attributes of a pet identified by its petID.
      *
-     * @param petID
-     * @return stored data for the pet
-     *
-     * IDs: { 1: Dog, 2: Fox, 3: Cat, 4: Rat}
+     * @param petID The ID of the pet whose attributes need to be retrieved.
+     *              Valid IDs: { "1": Dog, "2": Fox, "3": Cat, "4": Rat }.
+     * @return A map containing the pet's attributes (e.g., happiness, hunger, health, sleep),
+     *         or an empty map if the petID is not found or an error occurs.
+     *         The keys of the map are attribute names (e.g., "happiness"),
+     *         and the values are the corresponding attribute values.
      */
     public static Map<String, String> getPetAttributes(String petID) {
         Map<String, String> attributes = new HashMap<>();
