@@ -5,25 +5,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataManager {
-    private final File csvFile;
 
-    DataManager() {
-        this.csvFile = new File("Data/State.csv");
-        try {
-            FileReader reader = new FileReader(this.csvFile);
-        } catch( IOException e) {
+    private static void writePetDataToCsv() {
+        // Define the data for the CSV file
+        String[] headers = {"petID", "happiness", "hunger", "health", "sleep"};
+        String[][] petData = {
+                {"1", "70", "70", "70", "70"},
+                {"2", "70", "70", "70", "70"},
+                {"3", "70", "70", "70", "70"},
+                {"4", "70", "70", "70", "70"}
+        };
+
+        // Write data to the CSV file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Data/State.csv"))) {
+            // Write the header
+            writer.write(String.join(",", headers));
+            writer.newLine();
+
+            // Write the rows of data
+            for (String[] row : petData) {
+                writer.write(String.join(",", row));
+                writer.newLine();
+            }
+
+            System.out.println("CSV file written successfully to " + "State.csv");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Map<String, Integer> getPetAttributes(String fileName, String petID) {
-        Map<String, Integer> attributes = new HashMap<>();
+    /**
+     *
+     * @param petID
+     * @return stored data for the pet
+     *
+     * IDs: { 1: Dog, 2: Fox, 3: Cat, 4: Rat}
+     */
+    public static Map<String, String> getPetAttributes(String petID) {
+        Map<String, String> attributes = new HashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(this.csvFile)) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("Data/State.csv"))) {
             // Read the header line
-            final String headerLine = reader.readLine();
+            String headerLine = reader.readLine();
             if (headerLine == null) {
-                throw new IOException("CSV file is empty");
+                writePetDataToCsv();
+                headerLine = reader.readLine();
             }
             String[] headers = headerLine.split(",");
 
@@ -40,10 +66,6 @@ public class DataManager {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         return attributes; // Empty if petID not found
