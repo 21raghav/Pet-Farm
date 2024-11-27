@@ -1,51 +1,91 @@
 package Animation;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class DogAnimation extends JPanel {
-    private BufferedImage spriteSheet;
     private BufferedImage[] idleFrames;
-    private int currentFrame = 0; // Current frame in the animation
-    private Timer animationTimer;
+    private BufferedImage[] attackFrames;
+    private BufferedImage[] deathFrames;
+    private BufferedImage[] hurtFrames;
+    private BufferedImage[] walkFrames;
+
+    private BufferedImage[] currentAnimation; // Tracks which animation is playing
+    private int currentFrame = 0;
+    private final Timer animationTimer;
+
+    public enum DogState {
+        IDLE,
+        ATTACK,
+        DEATH,
+        HURT,
+        WALK
+    }
+
+    private DogState currentState = DogState.IDLE;
 
     public DogAnimation() {
-        // Load the sprite sheet
-        try {
-            spriteSheet = ImageIO.read(new File("Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Attack.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadAnimations();
+        currentAnimation = idleFrames;
 
-        // Load the images for idle animation frames
-        idleFrames = new BufferedImage[4];
-
-        // Assuming each sprite in the sheet is 64x64 pixels and there are 3 frames
-        int frameWidth = 48;
-        int frameHeight = 48;
-        int numberOfFrames = 4; // Change this based on the number of sprites you have
-
-        // Extract frames from the sprite sheet
-        idleFrames = new BufferedImage[numberOfFrames];
-        for (int i = 0; i < numberOfFrames; i++) {
-            idleFrames[i] = spriteSheet.getSubimage(i * frameWidth, 0, frameWidth, frameHeight);
-        }
-
-        // Set up a timer to update the frame every 100 milliseconds
-        animationTimer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentFrame = (currentFrame + 1) % idleFrames.length;
-                repaint(); // Repaint the panel to show the updated frame
-            }
+        animationTimer = new Timer(100, e -> {
+            currentFrame = (currentFrame + 1) % currentAnimation.length;
+            repaint();
         });
-        animationTimer.start(); // Start the animation timer
+        animationTimer.start();
+    }
+
+    private void loadAnimations() {
+        try {
+            // Load all animations
+            idleFrames = loadFrames(
+                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Idle.png", 4);
+            attackFrames = loadFrames(
+                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Attack.png", 4);
+            deathFrames = loadFrames(
+                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Death.png", 4);
+            hurtFrames = loadFrames(
+                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Hurt.png", 4);
+            walkFrames = loadFrames(
+                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Walk.png", 4);
+        } catch (IOException e) {
+        }
+    }
+
+    private BufferedImage[] loadFrames(String path, int frameCount) throws IOException {
+        BufferedImage spriteSheet = ImageIO.read(new File(path));
+        BufferedImage[] frames = new BufferedImage[frameCount];
+
+        // Calculate frame width based on sprite sheet width and frame count
+        int frameWidth = spriteSheet.getWidth() / frameCount;
+        int frameHeight = spriteSheet.getHeight();
+
+        System.out.println("Loading " + path);
+        System.out.println("Sprite sheet dimensions: " + spriteSheet.getWidth() + "x" + spriteSheet.getHeight());
+        System.out.println("Frame dimensions: " + frameWidth + "x" + frameHeight);
+
+        for (int i = 0; i < frameCount; i++) {
+            frames[i] = spriteSheet.getSubimage(i * frameWidth, 0, frameWidth, frameHeight);
+        }
+        return frames;
+    }
+
+    public void setAnimation(DogState state) {
+        if (currentState != state) {
+            currentState = state;
+            currentFrame = 0; // Reset to first frame
+            switch (state) {
+                case IDLE -> currentAnimation = idleFrames;
+                case ATTACK -> currentAnimation = attackFrames;
+                case DEATH -> currentAnimation = deathFrames;
+                case HURT -> currentAnimation = hurtFrames;
+                case WALK -> currentAnimation = walkFrames;
+            }
+        }
     }
 
     @Override
@@ -55,10 +95,11 @@ public class DogAnimation extends JPanel {
         // Scaling factor (e.g., 2.0 for double size)
         double scaleFactor = 10.0;
 
-        int scaledWidth = (int)(idleFrames[currentFrame].getWidth() * scaleFactor);
-        int scaledHeight = (int)(idleFrames[currentFrame].getHeight() * scaleFactor);
+        int scaledWidth = (int) (currentAnimation[currentFrame].getWidth() * scaleFactor);
+        int scaledHeight = (int) (currentAnimation[currentFrame].getHeight() * scaleFactor);
 
         // Draw the current frame of the Dog object
-        g.drawImage(idleFrames[currentFrame], 50, 50, scaledWidth, scaledHeight, this); // Position at (50,50) for example
+        g.drawImage(currentAnimation[currentFrame], 50, 50, scaledWidth, scaledHeight, this); // Position at (50,50) for
+                                                                                              // example
     }
 }

@@ -1,11 +1,12 @@
 package Game;
 
-import UI.KeyboardListener;
 import UI.MainScreen;
 
-
 public class GameManager {
+    public MainScreen mainScreen;
+
     public void start() {
-        new MainScreen();
+        System.out.println("Starting game..."); // Debug print
+        mainScreen = new MainScreen();
     }
 }
