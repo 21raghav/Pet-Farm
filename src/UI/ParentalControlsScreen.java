@@ -33,7 +33,7 @@ public class ParentalControlsScreen {
 
         // Set up the frame
         frame = new JFrame("Parental Controls");
-        frame.setSize(800, 600);
+        frame.setSize(1920, 1080); // Updated resolution to 1920x1080
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(null);
 
@@ -46,12 +46,12 @@ public class ParentalControlsScreen {
 
         // Set background image
         ImageIcon backgroundIcon = new ImageIcon("Assets/GameImages/ParentalPassword.png");
-        backgroundLabel = new JLabel(new ImageIcon(backgroundIcon.getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH)));
-        backgroundLabel.setBounds(0, 0, 800, 600);
+        backgroundLabel = new JLabel(new ImageIcon(backgroundIcon.getImage().getScaledInstance(1920, 1080, Image.SCALE_SMOOTH)));
+        backgroundLabel.setBounds(0, 0, 1920, 1080);
 
         // Add password field
         passwordField = new JPasswordField(15);
-        passwordField.setBounds(393, 330, 260, 35);
+        passwordField.setBounds(940, 590, 300, 80); // Adjusted bounds to match new resolution
         passwordField.setFont(new Font("Arial", Font.PLAIN, 18));
         passwordField.setOpaque(false);
         passwordField.setBorder(BorderFactory.createEmptyBorder());
@@ -59,10 +59,13 @@ public class ParentalControlsScreen {
 
         // Add invisible button for "Enter Password"
         JButton invisibleLoginButton = new JButton();
-        invisibleLoginButton.setBounds(300, 434, 200, 70);
+        invisibleLoginButton.setBounds(750, 800, 400, 150); // Adjusted bounds to match new resolution
         invisibleLoginButton.setContentAreaFilled(false);
         invisibleLoginButton.setBorderPainted(false);
         frame.add(invisibleLoginButton);
+
+        // Add ActionListener for the invisible button
+        invisibleLoginButton.addActionListener(e -> handlePasswordSubmission());
 
         // Add sound effects
         ButtonUtils.addButtonClickSound(invisibleLoginButton, "Assets/Sounds/click.wav");
@@ -71,13 +74,14 @@ public class ParentalControlsScreen {
         // Add status label
         statusLabel = new JLabel("");
         statusLabel.setForeground(Color.RED);
-        statusLabel.setBounds(200, 420, 400, 30);
+        statusLabel.setBounds(700, 580, 500, 30); // Adjusted bounds to match new resolution
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         frame.add(statusLabel);
 
         // Add the background last
         frame.add(backgroundLabel);
 
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set frame to fullscreen
         frame.setVisible(true);
         mainScreen.setVisible(false);
     }
@@ -140,12 +144,14 @@ public class ParentalControlsScreen {
         JPanel revivePanel = new JPanel();
         revivePanel.setBorder(new TitledBorder("Pet Revival"));
         revivePetButton = new JButton("Revive All Pets");
+        revivePetButton.addActionListener(e -> reviveAllPets());
         revivePanel.add(revivePetButton);
 
         // Play Game as Parent Section
         JPanel playGamePanel = new JPanel();
         playGamePanel.setBorder(new TitledBorder("Play Game"));
         playGameButton = new JButton("Play Game as Parent");
+        playGameButton.addActionListener(e -> launchGameAsParent());
         playGamePanel.add(playGameButton);
 
         // Add panels to the control panel
@@ -162,7 +168,7 @@ public class ParentalControlsScreen {
         controlPanel.add(backButton);
 
         // Add control panel to the frame
-        controlPanel.setBounds(50, 50, 700, 500);
+        controlPanel.setBounds(100, 100, 1700, 800); // Adjusted bounds to fit new resolution
         frame.add(controlPanel);
 
         // Refresh the frame
