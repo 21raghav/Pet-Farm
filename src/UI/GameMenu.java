@@ -1,6 +1,9 @@
 package UI;
 
+import Pets.Cat;
 import Pets.Dog;
+import Pets.Pet;
+import Pets.Rat;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,7 +26,9 @@ public class GameMenu extends JFrame {
     private int hunger = 30; // Hunger percentage
     private int sleep = 70; // Sleep percentage
 
-    public GameMenu() {
+    private Pet petToSpawn;
+
+    public GameMenu(Pet petToSpawn) {
         setTitle("Game Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);  // Set the frame to full screen
@@ -88,10 +93,9 @@ public class GameMenu extends JFrame {
 
         mainPanel.setLayout(null);
 
-        Dog dog = new Dog("Dog2");
-        JPanel dogCharacter = dog.getAnimationPanel();
-        dogCharacter.setBounds(100, 100, dogCharacter.getPreferredSize().width, dogCharacter.getPreferredSize().height);
-        mainPanel.add(dogCharacter);
+        JPanel character = petToSpawn.getAnimationPanel();
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        mainPanel.add(character);
 
         add(mainPanel);
 
@@ -120,7 +124,7 @@ public class GameMenu extends JFrame {
         mainPanel.setFocusable(true);
         mainPanel.requestFocusInWindow();
 
-        KeyboardListener animalControls = new KeyboardListener(dog);
+        KeyboardListener animalControls = new KeyboardListener(petToSpawn);
         mainPanel.addKeyListener(animalControls);
 
         setVisible(true);
@@ -179,7 +183,7 @@ public class GameMenu extends JFrame {
     }
 
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameMenu::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> new GameMenu(this.petToSpawn));
+//    }
 }
