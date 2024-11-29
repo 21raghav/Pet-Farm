@@ -117,6 +117,11 @@ public class GameMenu extends JFrame {
             }
         });
 
+        mainPanel.setFocusable(true);
+        mainPanel.requestFocusInWindow();
+
+        KeyboardListener animalControls = new KeyboardListener(dog);
+        mainPanel.addKeyListener(animalControls);
 
         setVisible(true);
     }
