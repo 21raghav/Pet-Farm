@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+
 public class GameMenu extends JFrame {
     private Image backgroundImage;
     private Image dogImage;
@@ -114,12 +115,22 @@ public class GameMenu extends JFrame {
 
         // Create Inventory Button with Icon
         JButton inventoryButton = new JButton(new ImageIcon(inventoryIcon));
-        inventoryButton.setBounds(1565,300, inventoryIcon.getWidth(null), inventoryIcon.getHeight(null)); // Set button size to match the icon
         inventoryButton.setContentAreaFilled(false); // Make the button transparent
         inventoryButton.setBorderPainted(false);     // Remove the button border
         inventoryButton.setFocusPainted(false);     // Remove the focus outline
         inventoryButton.addActionListener(e -> showInventoryDialog());
         mainPanel.add(inventoryButton);
+
+        // Update button position initially
+        updateInventoryButtonPosition(inventoryButton);
+
+        // Add a component listener to update button position on resize
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                updateInventoryButtonPosition(inventoryButton);
+            }
+        });
 
         setVisible(true);
     }
@@ -198,9 +209,13 @@ public class GameMenu extends JFrame {
     }
 
     private void showInventoryDialog() {
+        // New variable for inventory item counts
+        int[] itemCounts = {5, 3, 2, 4, 1, 6}; // Example counts for each item
+
         JDialog inventoryDialog = new JDialog(this, "Inventory", false);
         inventoryDialog.setSize(525, 225);
         inventoryDialog.setLocationRelativeTo(this);
+        inventoryDialog.setResizable(false); // Prevent resizing of the dialog
 
         JPanel inventoryPanel = new JPanel() {
             @Override
@@ -209,11 +224,40 @@ public class GameMenu extends JFrame {
                 if (inventoryImage != null) {
                     g.drawImage(inventoryImage, 0, 0, getWidth(), getHeight(), this);
                 }
+
+                // Set font size
+                g.setFont(new Font("Arial", Font.BOLD, 20)); // Increase font size
+
+                // Draw inventory item counts at specific coordinates with different colors
+                g.setColor(Color.RED);
+                g.drawString(String.valueOf(itemCounts[0]), 145, 120); // Strawberry count
+
+                g.setColor(Color.ORANGE);
+                g.drawString(String.valueOf(itemCounts[1]), 235, 120); // Orange count
+
+                g.setColor(Color.YELLOW);
+                g.drawString(String.valueOf(itemCounts[2]), 320, 120); // Banana count
+
+                g.setColor(Color.GREEN);
+                g.drawString(String.valueOf(itemCounts[3]), 60, 120); // Apple count
+
+                g.setColor(Color.BLUE);
+                g.drawString(String.valueOf(itemCounts[4]), 405, 120); // Treat1 count
+
+                g.setColor(Color.MAGENTA);
+                g.drawString(String.valueOf(itemCounts[5]), 490, 120); // Treat2 count
             }
         };
 
         inventoryDialog.add(inventoryPanel);
         inventoryDialog.setVisible(true);
+    }
+
+    private void updateInventoryButtonPosition(JButton inventoryButton) {
+        // Calculate the new position based on the current window size
+        int buttonX = getWidth() - inventoryIcon.getWidth(null) - 20; // Adjust X position to move it more to the right
+        int buttonY = 300; // Keep Y position constant or adjust as needed
+        inventoryButton.setBounds(buttonX, buttonY, inventoryIcon.getWidth(null), inventoryIcon.getHeight(null));
     }
 
 
