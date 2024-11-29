@@ -30,7 +30,18 @@ public class DogAnimation extends JPanel {
 
     public DogAnimation() {
         loadAnimations();
+
+        if (idleFrames == null || idleFrames.length == 0) {
+            throw new IllegalStateException("Failed to load idle animation frames.");
+        }
+
         currentAnimation = idleFrames;
+
+        // Set preferred size based on a desired scale factor
+        double scaleFactor = 4.0; // Adjust as needed
+        int scaledWidth = (int) (idleFrames[0].getWidth() * scaleFactor);
+        int scaledHeight = (int) (idleFrames[0].getHeight() * scaleFactor);
+        setPreferredSize(new Dimension(scaledWidth, scaledHeight));
 
         animationTimer = new Timer(100, e -> {
             currentFrame = (currentFrame + 1) % currentAnimation.length;
@@ -38,6 +49,7 @@ public class DogAnimation extends JPanel {
         });
         animationTimer.start();
     }
+
 
     private void loadAnimations() {
         try {
@@ -49,20 +61,28 @@ public class DogAnimation extends JPanel {
             deathFrames = loadFrames(
                     "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Death.png", 4);
             hurtFrames = loadFrames(
-                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Hurt.png", 4);
+                    "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Hurt.png", 2);
             walkFrames = loadFrames(
                     "Assets/craftpix-net-610575-free-street-animal-pixel-art-asset-pack/2 Dog 2/Walk.png", 4);
         } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading animation assets: " + e.getMessage(),
+                    "Asset Loading Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private BufferedImage[] loadFrames(String path, int frameCount) throws IOException {
-        BufferedImage spriteSheet = ImageIO.read(new File(path));
+        File file = new File(path);
+        if (!file.exists()) {
+            throw new IOException("File not found: " + path);
+        }
+
+        BufferedImage spriteSheet = ImageIO.read(file);
         BufferedImage[] frames = new BufferedImage[frameCount];
 
         // Calculate frame width based on sprite sheet width and frame count
-        int frameWidth = spriteSheet.getWidth() / frameCount;
-        int frameHeight = spriteSheet.getHeight();
+        int frameWidth = 48;
+        int frameHeight = 48;
 
         System.out.println("Loading " + path);
         System.out.println("Sprite sheet dimensions: " + spriteSheet.getWidth() + "x" + spriteSheet.getHeight());
@@ -85,6 +105,10 @@ public class DogAnimation extends JPanel {
                 case HURT -> currentAnimation = hurtFrames;
                 case WALK -> currentAnimation = walkFrames;
             }
+            // Fallback to idle if the desired animation is null
+            if (currentAnimation == null || currentAnimation.length == 0) {
+                currentAnimation = idleFrames;
+            }
         }
     }
 
@@ -92,14 +116,15 @@ public class DogAnimation extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Scaling factor (e.g., 2.0 for double size)
-        double scaleFactor = 10.0;
+        if (currentAnimation == null || currentAnimation.length == 0) {
+            currentAnimation = idleFrames;
+        }
 
-        int scaledWidth = (int) (currentAnimation[currentFrame].getWidth() * scaleFactor);
-        int scaledHeight = (int) (currentAnimation[currentFrame].getHeight() * scaleFactor);
+        // Get panel size
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
 
-        // Draw the current frame of the Dog object
-        g.drawImage(currentAnimation[currentFrame], 50, 50, scaledWidth, scaledHeight, this); // Position at (50,50) for
-                                                                                              // example
+        // Draw the current frame of the Dog object, scaled to panel size
+        g.drawImage(currentAnimation[currentFrame], 0, 0, panelWidth, panelHeight, this);
     }
 }

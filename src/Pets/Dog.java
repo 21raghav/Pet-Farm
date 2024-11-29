@@ -8,13 +8,16 @@ public class Dog extends Pet {
     private boolean isMoving = false;
     private boolean isAttacking = false;
 
-    public Dog(String name, JFrame frame) {
+    public Dog(String name) {
         super(name);
         animationPanel = new DogAnimation();
-        frame.add(animationPanel);
-
+        animationPanel.setOpaque(false);
         // Start with idle animation
         animationPanel.setAnimation(DogAnimation.DogState.IDLE);
+    }
+
+    public DogAnimation getAnimationPanel() {
+        return animationPanel;
     }
 
     public void walk() {

@@ -1,5 +1,7 @@
 package UI;
 
+import Pets.Dog;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -12,13 +14,10 @@ import javax.swing.*;
 
 public class GameMenu extends JFrame {
     private Image backgroundImage;
-    private Image dogImage;
     private Image statBarImage; // New variable for the stat bar image
     private Image healthIcon; // New variable for the health icon
     private Image inventoryIcon; // New variable for the inventory icon
     private Image inventoryImage; // New variable for inventory image
-    private int dogX, dogY;  // Dog's position
-    private int dogSpeedX = 10, dogSpeedY = 10;  // Dog's movement speed
     private int health = 100; // Health percentage
     private int happiness = 80; // Happiness percentage
     private int hunger = 30; // Hunger percentage
@@ -32,27 +31,22 @@ public class GameMenu extends JFrame {
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("Assets/GameImages/GameMenu.png"));
-            dogImage = ImageIO.read(new File("Assets/Idle.png"));
             statBarImage = ImageIO.read(new File("Assets/Images/statbar.png")); // Load the stat bar image
             healthIcon = ImageIO.read(new File("Assets/Images/healthicon.png")); // Load the health icon image
             inventoryIcon = ImageIO.read(new File("Assets/Images/InventoryIcon.png")); // Load the inventory icon image
             inventoryImage = ImageIO.read(new File("Assets/Images/Inventory.png")); // Load the inventory image
-            if (dogImage == null) {
-                throw new IOException("Dog image could not be loaded.");
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading images: " + e.getMessage(), "Image Load Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
 
-
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the background image
-                g.drawImage(dogImage, dogX, dogY, this); // Draw the dog image
 
                 // Draw the stat bar at the top right corner
                 int statBarWidth = statBarImage.getWidth(null);
@@ -93,25 +87,16 @@ public class GameMenu extends JFrame {
         };
 
         mainPanel.setLayout(null);
-        setupKeyBindings(mainPanel); // Add this line to attach key bindings to the main panel
+
+        Dog dog = new Dog("Dog2");
+        JPanel dogCharacter = dog.getAnimationPanel();
+        dogCharacter.setBounds(100, 100, dogCharacter.getPreferredSize().width, dogCharacter.getPreferredSize().height);
+        mainPanel.add(dogCharacter);
 
         add(mainPanel);
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                dogX = (getWidth() - dogImage.getWidth(null)) / 2;
-                dogY = (getHeight() - dogImage.getHeight(null)) /2;
-            }
-        });
+
 
         mainPanel.setFocusable(true);
-        mainPanel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                moveDog(e.getKeyCode());
-                mainPanel.repaint();
-            }
-        });
 
         // Create Inventory Button with Icon
         JButton inventoryButton = new JButton(new ImageIcon(inventoryIcon));
@@ -132,80 +117,8 @@ public class GameMenu extends JFrame {
             }
         });
 
+
         setVisible(true);
-    }
-
-    private void setupKeyBindings(JPanel panel) {
-        InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = panel.getActionMap();
-
-        inputMap.put(KeyStroke.getKeyStroke("UP"), "moveUp");
-        inputMap.put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
-        inputMap.put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
-        inputMap.put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
-
-        actionMap.put("moveUp", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moveDog(KeyEvent.VK_UP);
-                panel.repaint();
-            }
-        });
-
-        actionMap.put("moveDown", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moveDog(KeyEvent.VK_DOWN);
-                panel.repaint();
-            }
-        });
-
-        actionMap.put("moveLeft", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moveDog(KeyEvent.VK_LEFT);
-                panel.repaint();
-            }
-        });
-
-        actionMap.put("moveRight", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                moveDog(KeyEvent.VK_RIGHT);
-                panel.repaint();
-            }
-        });
-    }
-
-    private void moveDog(int keyCode) {
-        int frameWidth = getWidth();
-        int frameHeight = getHeight();
-        int heightBound = (getHeight() /2) - 150;
-        int imageWidth = dogImage.getWidth(null);
-        int imageHeight = dogImage.getHeight(null);
-
-        switch (keyCode) {
-            case KeyEvent.VK_LEFT:
-                if (dogX - dogSpeedX >= 0) {
-                    dogX -= dogSpeedX;
-                }
-                break;
-            case KeyEvent.VK_RIGHT:
-                if (dogX + dogSpeedX + imageWidth <= frameWidth) {
-                    dogX += dogSpeedX;
-                }
-                break;
-            case KeyEvent.VK_UP:
-                if (dogY - dogSpeedY >= 0 && dogY >= heightBound) {
-                    dogY -= dogSpeedY;
-                }
-                break;
-            case KeyEvent.VK_DOWN:
-                if (dogY + dogSpeedY + imageHeight <= frameHeight-50) {
-                    dogY += dogSpeedY;
-                }
-                break;
-        }
     }
 
     private void showInventoryDialog() {
