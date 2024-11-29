@@ -1,169 +1,167 @@
 package UI;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import javax.swing.*;
 
 public class MainScreen extends JFrame {
-    private JPanel currentPanel;
-    private ImageIcon currentBackground;
-    
-    // Update these constants for button positioning (as percentages)
-    private final double LOAD_BUTTON_X_PERCENT = 0.45; 
-    private final double LOAD_BUTTON_Y_PERCENT = 0.417; 
-    private final double BUTTON_WIDTH_PERCENT = 0.14;  
-    private final double BUTTON_HEIGHT_PERCENT = 0.1; 
-    private final double NEW_BUTTON_Y_PERCENT = 0.59; 
-    
+    private JLabel imageLabel;
+    private Image originalImage;
+    private JLabel animalLabel; // Label for the animal image
+
     public MainScreen() {
-        System.out.println("Initializing MainScreen..."); // Debug print
+        // Load the initial image
+        ImageIcon mainMenuImage = new ImageIcon("Assets/GameImages/MainMenu.png");
+        originalImage = mainMenuImage.getImage();
+        imageLabel = new JLabel(new ImageIcon(originalImage));
+
+        MusicUtils.playBackgroundMusic("Assets/Sounds/MenuMusic.wav");
+
+        // Set up the frame
+        setTitle("Main Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Start maximized
-        
-        // Add a component listener to handle window resizing
+        setSize(1920, 1080); // Default resolution set to 1920x1080
+        setLayout(null);
+
+        // Set the bounds of the image label and add it to the frame
+        imageLabel.setBounds(0, 0, 1920, 1080); // Cover the entire screen
+        add(imageLabel);
+
+        // Add a listener to handle window resizing
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                updateButtonPositions();
+                int newWidth = getWidth();
+                int newHeight = getHeight();
+
+                // Scale the image to cover the entire screen
+                Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(scaledImage));
+
+                // Update the bounds of the imageLabel to match the new frame size
+                imageLabel.setBounds(0, 0, newWidth, newHeight);
+
+                // Re-center the animal label if it exists
+                if (animalLabel != null) {
+                    int animalX = newWidth / 2 - animalLabel.getWidth() / 2;
+                    int animalY = newHeight / 2 - animalLabel.getHeight() / 2;
+                    animalLabel.setBounds(animalX, animalY, animalLabel.getWidth(), animalLabel.getHeight());
+                }
+
+                // Refresh the frame
+                revalidate();
+                repaint();
             }
         });
-        
-        // Try to load the main menu image first to verify path
-        File imageFile = new File("Assets/GameImages/MainMenu.png");
-        if (!imageFile.exists()) {
-            System.err.println("Cannot find file: " + imageFile.getAbsolutePath());
-            // Try to list contents of Assets directory to debug
-            File assetsDir = new File("Assets");
-            if (assetsDir.exists()) {
-                System.out.println("Contents of Assets directory:");
-                for (File file : assetsDir.listFiles()) {
-                    System.out.println(file.getPath());
+
+        // Use a mouse listener to detect clicks
+        imageLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+
+                // Calculate scale factors based on the current size of the imageLabel
+                double xScale = (double) imageLabel.getWidth() / 1920; // Adjust based on new resolution
+                double yScale = (double) imageLabel.getHeight() / 1080;
+
+                // Add sound effect path
+                String clickSoundPath = "Assets/Sounds/click.wav";
+
+                // Detect button clicks and play sound
+                if (isWithinBounds(x, y, (int) (835 * xScale), (int) (620 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
+                    ButtonUtils.playSound(clickSoundPath); // Play sound on "Game" button click
+                    changeImage("Assets/GameImages/LoadGame.png", "Load Game Menu");
+                } else if (isWithinBounds(x, y, (int) (835 * xScale), (int) (760 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
+                    ButtonUtils.playSound(clickSoundPath); // Play sound on "Tutorial" button click
+                    // Instead of changing the image, open the GameMenu
+                    SwingUtilities.invokeLater(GameMenu::new);
+                } else if (isWithinBounds(x, y, (int) (835 * xScale), (int) (920 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
+                    ButtonUtils.playSound(clickSoundPath); // Play sound on "Parental" button click
+                    new ParentalControlsScreen(MainScreen.this);
+                } else if (isWithinBounds(x, y, (int) (250 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (200 * yScale))) {
+                    ButtonUtils.playSound(clickSoundPath); // Play sound on "New Game" button click in Load Game Menu
+                    changeImage("Assets/GameImages/PetSelection.png", "Pet Selection");
+                } else if (isWithinBounds(x, y, (int) (1400 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (200 * yScale))) {
+                    ButtonUtils.playSound(clickSoundPath); // Play sound on "Go Back" button click in Load Game Menu
+                    changeImage("Assets/GameImages/MainMenu.png", "Main Menu");
+
+                    // Remove the animal image if it exists
+                    removeanimalFromScreen();
+                } else if (isWithinBounds(x, y, (int) (600 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
+                    // Top left animal in Pet Selection screen
+                    ButtonUtils.playSound(clickSoundPath); // Play sound
+                    SwingUtilities.invokeLater(GameMenu::new); // Open GameMenu class
                 }
-            } else {
-                System.err.println("Assets directory not found!");
             }
-        }
-        
-        showMainMenu();
-        setVisible(true); // Make sure to set visible
+        });
+
+        // Make the frame visible
+        setVisible(true);
     }
-    
-    private void showMainMenu() {
-        System.out.println("Showing main menu..."); // Debug print
-        if (currentPanel != null) {
-            remove(currentPanel);
-        }
-        
-        currentPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                try {
-                    ImageIcon background = new ImageIcon("Assets/GameImages/MainMenu.png");
-                    if (background.getImageLoadStatus() != MediaTracker.COMPLETE) {
-                        System.err.println("Failed to load MainMenu.png");
-                        return;
-                    }
-                    g.drawImage(background.getImage(), 0, 0, getWidth(), getHeight(), this);
-                } catch (Exception e) {
-                    System.err.println("Error loading/drawing background: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        };
-        
-        currentPanel.setLayout(null);
-        
-        // Create buttons with initial positions
-        JButton loadGameBtn = createTransparentButton(0, 0, 0, 0); // Size will be set in updateButtonPositions
-        
-        loadGameBtn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                loadGameBtn.setBorderPainted(false);
-            }
-            
-            @Override
-            public void mousePressed(MouseEvent e) {
-                loadGameBtn.setBorderPainted(false);
-            }
-        });
-        
-        loadGameBtn.addActionListener(e -> showLoadGame());
-        
-        currentPanel.add(loadGameBtn);
-        
-        add(currentPanel);
-        
-        // Set initial button positions
-        updateButtonPositions();
-        
+
+    // Method to change the image and title
+    private void changeImage(String imagePath, String newTitle) {
+        ImageIcon newImageIcon = new ImageIcon(imagePath);
+        originalImage = newImageIcon.getImage();
+
+        int newWidth = getWidth();
+        int newHeight = getHeight();
+
+        // Scale the image to cover the entire screen
+        Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        imageLabel.setIcon(new ImageIcon(scaledImage));
+
+        // Update the bounds of the imageLabel to match the new frame size
+        imageLabel.setBounds(0, 0, newWidth, newHeight);
+
+        setTitle(newTitle);
+
         revalidate();
         repaint();
     }
-    
-    private void updateButtonPositions() {
-        // Get current window dimensions
-        int width = getContentPane().getWidth();
-        int height = getContentPane().getHeight();
-        
-        // Calculate button dimensions based on percentages
-        int buttonWidth = (int)(width * BUTTON_WIDTH_PERCENT);
-        int buttonHeight = (int)(height * BUTTON_HEIGHT_PERCENT);
-        int loadButtonX = (int)(width * LOAD_BUTTON_X_PERCENT);
-        int loadButtonY = (int)(height * LOAD_BUTTON_Y_PERCENT);
-        int newButtonY = (int)(height * NEW_BUTTON_Y_PERCENT);
-        
-        // Update all buttons in the current panel
-        for (Component c : currentPanel.getComponents()) {
-            if (c instanceof JButton) {
-                JButton button = (JButton)c;
-                if (button.getActionListeners()[0].toString().contains("showLoadGame")) {
-                    button.setBounds(loadButtonX, loadButtonY, buttonWidth, buttonHeight);
-                } else {
-                    button.setBounds(loadButtonX, newButtonY, buttonWidth, buttonHeight);
-                }
-            }
+
+    // Method to add the animal image to the game menu
+    private void addanimalToGameMenu() {
+        if (animalLabel == null) {
+            // Load the Idle.png image for the animal
+            ImageIcon animalImageIcon = new ImageIcon("Assets/Idle.png");
+            Image animalImage = animalImageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH); // Scale the image
+            animalLabel = new JLabel(new ImageIcon(animalImage));
+
+            // Set the position for the animal image (center of the screen)
+            int animalX = getWidth() / 2 - 150; // Center horizontally (300 is the width of the image)
+            int animalY = getHeight() / 2 - 150; // Center vertically (300 is the height of the image)
+            animalLabel.setBounds(animalX, animalY, 300, 300);
+
+            // Add the animal label to the frame
+            add(animalLabel);
+        }
+
+        // Ensure the animalLabel is displayed
+        revalidate();
+        repaint();
+    }
+
+    // Method to remove the animal image from the screen
+    private void removeanimalFromScreen() {
+        if (animalLabel != null) {
+            remove(animalLabel);
+            animalLabel = null;
+
+            revalidate();
+            repaint();
         }
     }
-    
-    private void showLoadGame() {
-        // Close the current window
-        this.dispose();
-        
-        // Create and show the LoadGame window
-        SwingUtilities.invokeLater(() -> {
-            LoadGame loadGame = new LoadGame();
-            loadGame.setVisible(true);
-        });
+
+    private boolean isWithinBounds(int x, int y, int rectX, int rectY, int rectWidth, int rectHeight) {
+        return x >= rectX && x <= rectX + rectWidth && y >= rectY && y <= rectY + rectHeight;
     }
-    
-    private JButton createTransparentButton(int x, int y, int width, int height) {
-        JButton button = new JButton();
-        button.setBounds(x, y, width, height);
-        button.setOpaque(false);
-        button.setContentAreaFilled(false);
-        button.setBorderPainted(false);
-        
-        // Optional: Make button visible on hover for debugging
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBorderPainted(true);
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBorderPainted(false);
-            }
-        });
-        
-        return button;
+
+    public static void main(String[] args) {
+        new MainScreen();
     }
 }
