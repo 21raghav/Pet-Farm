@@ -19,14 +19,31 @@ public class ButtonUtils {
         });
     }
 
-    // Play a WAV sound file
+    // Play a WAV sound file with dynamic format handling
     public static void playSound(String soundFilePath) {
         new Thread(() -> {
             try {
                 File soundFile = new File(soundFilePath);
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+
+                // Check and convert the audio format if necessary
+                AudioFormat baseFormat = audioStream.getFormat();
+                AudioFormat decodedFormat = new AudioFormat(
+                        AudioFormat.Encoding.PCM_SIGNED,
+                        baseFormat.getSampleRate(),
+                        16, // 16-bit audio
+                        baseFormat.getChannels(),
+                        baseFormat.getChannels() * 2, // Frame size
+                        baseFormat.getSampleRate(),
+                        false // Little-endian
+                );
+
+                // Convert the audio stream to a supported format
+                AudioInputStream decodedStream = AudioSystem.getAudioInputStream(decodedFormat, audioStream);
+
+                // Play the audio
                 Clip clip = AudioSystem.getClip();
-                clip.open(audioStream);
+                clip.open(decodedStream);
                 clip.start();
             } catch (Exception ex) {
                 ex.printStackTrace();

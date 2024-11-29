@@ -3,7 +3,6 @@ package UI;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,8 @@ public class ParentalControlsScreen {
 
         // Set up the frame
         frame = new JFrame("Parental Controls");
-        frame.setSize(1920, 1080); // Updated resolution to 1920x1080
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setSize(screenSize.width, screenSize.height);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(null);
 
@@ -46,22 +46,22 @@ public class ParentalControlsScreen {
 
         // Set background image
         ImageIcon backgroundIcon = new ImageIcon("Assets/GameImages/ParentalPassword.png");
-        backgroundLabel = new JLabel(new ImageIcon(backgroundIcon.getImage().getScaledInstance(1920, 1080, Image.SCALE_SMOOTH)));
-        backgroundLabel.setBounds(0, 0, 1920, 1080);
+        backgroundLabel = new JLabel(new ImageIcon(backgroundIcon.getImage().getScaledInstance(screenSize.width, screenSize.height, Image.SCALE_SMOOTH)));
+        backgroundLabel.setBounds(0, 0, screenSize.width, screenSize.height);
 
         // Add password field
         passwordField = new JPasswordField(15);
-        passwordField.setBounds(940, 590, 300, 80); // Adjusted bounds to match new resolution
         passwordField.setFont(new Font("Arial", Font.PLAIN, 18));
         passwordField.setOpaque(false);
         passwordField.setBorder(BorderFactory.createEmptyBorder());
+        passwordField.setBounds(screenSize.width / 2 - 10, screenSize.height / 2 , 300, 110);
         frame.add(passwordField);
 
         // Add invisible button for "Enter Password"
         JButton invisibleLoginButton = new JButton();
-        invisibleLoginButton.setBounds(750, 800, 400, 150); // Adjusted bounds to match new resolution
         invisibleLoginButton.setContentAreaFilled(false);
         invisibleLoginButton.setBorderPainted(false);
+        invisibleLoginButton.setBounds(screenSize.width / 2 - 200, screenSize.height / 2 + 100, 400, 150);
         frame.add(invisibleLoginButton);
 
         // Add ActionListener for the invisible button
@@ -74,8 +74,8 @@ public class ParentalControlsScreen {
         // Add status label
         statusLabel = new JLabel("");
         statusLabel.setForeground(Color.RED);
-        statusLabel.setBounds(700, 580, 500, 30); // Adjusted bounds to match new resolution
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        statusLabel.setBounds(screenSize.width / 2 - 250, screenSize.height / 2 - 90, 500, 30);
         frame.add(statusLabel);
 
         // Add the background last
@@ -168,7 +168,8 @@ public class ParentalControlsScreen {
         controlPanel.add(backButton);
 
         // Add control panel to the frame
-        controlPanel.setBounds(100, 100, 1700, 800); // Adjusted bounds to fit new resolution
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        controlPanel.setBounds(screenSize.width / 10, screenSize.height / 10, screenSize.width * 8 / 10, screenSize.height * 8 / 10);
         frame.add(controlPanel);
 
         // Refresh the frame
