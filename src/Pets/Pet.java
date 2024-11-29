@@ -30,7 +30,7 @@ public abstract class Pet {
     private int sleepLevel;
     private int hungerLevel;
 
-    private int x = 100; // Initial X position
+    private int x = 340; // Initial X position
     private int y = 100; // Initial Y position
 
     private int screenWidth;
@@ -65,12 +65,12 @@ public abstract class Pet {
 
     // Movement method
     public void move(int dx, int dy) {
-        if (x+ dx < 0 || x +dx > this.screenWidth) {
+        if (x+ dx < 0 || x +dx > 675) {
             return;
         }
         x += dx;
         y += dy;
-        animationPanel.setLocation(x, y);
+        animationPanel.setLocation(x, 150);
     }
 
     /**

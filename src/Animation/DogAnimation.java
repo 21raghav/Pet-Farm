@@ -19,8 +19,8 @@ public class DogAnimation extends JPanel implements Animation {
     private int currentFrame = 0;
     private final Timer animationTimer;
 
-    private int x = 100; // x-coordinate of the Dog
-    private int y = 100; // y-coordinate of the Dog
+    private int x = 340; // x-coordinate of the Dog
+    private int y = 150; // y-coordinate of the Dog
 
     @Override
     public int getX() {
