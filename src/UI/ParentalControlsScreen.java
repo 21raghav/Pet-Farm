@@ -40,7 +40,7 @@ public class ParentalControlsScreen {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         showPasswordScreen();
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);  // Fullscreen
+        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);  // Fullscreen
         frame.setVisible(true);
         mainScreen.setVisible(false);
     }
@@ -48,9 +48,13 @@ public class ParentalControlsScreen {
     private void showPasswordScreen() {
         frame.getContentPane().removeAll();
 
+        // Set frame size to appropriate dimensions
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Adjust borders
 
         JLabel label = new JLabel("Enter Password:");
         label.setFont(new Font("Arial", Font.BOLD, 24));
@@ -84,6 +88,10 @@ public class ParentalControlsScreen {
 
     private void showParentalControls() {
         frame.getContentPane().removeAll();
+        // Set the frame to fullscreen
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        frame.getContentPane().removeAll();
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -116,6 +124,11 @@ public class ParentalControlsScreen {
         frame.add(new JScrollPane(mainPanel), BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();
+    }
+    private void showParentalControlsImage() {
+        // Path to the Parental Controls image
+        String parentalControlsImagePath = "Assets/GameImages/ParentalPassword.png";
+
     }
 
     private JPanel createRestrictionsPanel() {

@@ -5,19 +5,19 @@ import Consumable.SleepConsumable;
 import Pets.Dog;
 import Pets.Pet;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TutorialGame extends JFrame {
     private Pet tutorialPet;
-    private int hunger = 70;
-    private int happiness = 70;
 
-    private JProgressBar hungerBar, happinessBar;
     private JLabel messageLabel;
 
     private int currentObjective = 1;
@@ -25,12 +25,21 @@ public class TutorialGame extends JFrame {
     // Movement counters
     private final Map<String, Integer> movementCounts = new HashMap<>();
 
+    private Image backgroundImage; // Background image
+
     public TutorialGame(Pet tutorialPet) {
         this.tutorialPet = tutorialPet;
 
+        // Load the GameMenu background image
+        try {
+            backgroundImage = ImageIO.read(new File("Assets/GameImages/GameMenu.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading background image: " + e.getMessage(), "Image Load Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+
         // Initialize movement counters
-        movementCounts.put("up", 0);
-        movementCounts.put("down", 0);
         movementCounts.put("left", 0);
         movementCounts.put("right", 0);
 
@@ -39,8 +48,17 @@ public class TutorialGame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 
-        // Main panel
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        // Custom main panel with background
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Draw the background image scaled to the panel size
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        mainPanel.setLayout(new BorderLayout());
+
         JPanel petPanel = tutorialPet.getAnimationPanel();
         mainPanel.add(petPanel, BorderLayout.CENTER);
 
@@ -48,21 +66,10 @@ public class TutorialGame extends JFrame {
         mainPanel.setFocusable(true);
         mainPanel.requestFocusInWindow();
 
-        // Stats panel
-        JPanel statsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        hungerBar = createProgressBar(hunger);
-        happinessBar = createProgressBar(happiness);
-
-        statsPanel.add(new JLabel("Hunger:"));
-        statsPanel.add(hungerBar);
-        statsPanel.add(new JLabel("Happiness:"));
-        statsPanel.add(happinessBar);
-
-        mainPanel.add(statsPanel, BorderLayout.NORTH);
-
         // Message display
-        messageLabel = new JLabel("Objective 1: Use W, A, S, D to move the pet (2 times each)!", SwingConstants.CENTER);
+        messageLabel = new JLabel("Objective 1: Use A and D to move the pet (2 times each)!", SwingConstants.CENTER);
         messageLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        messageLabel.setForeground(Color.WHITE); // Set text color to contrast with the background
         mainPanel.add(messageLabel, BorderLayout.SOUTH);
 
         // Add the main panel to the frame
@@ -83,6 +90,7 @@ public class TutorialGame extends JFrame {
 
         // Button panel
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false); // Make the button panel transparent
         JButton feedButton = new JButton("Feed");
         feedButton.addActionListener(e -> handleAction("Feed"));
         JButton sleepButton = new JButton("Sleep");
@@ -90,7 +98,7 @@ public class TutorialGame extends JFrame {
         buttonPanel.add(feedButton);
         buttonPanel.add(sleepButton);
 
-        add(buttonPanel, BorderLayout.SOUTH);
+        mainPanel.add(buttonPanel, BorderLayout.NORTH);
 
         // Ensure focus is set to the window
         SwingUtilities.invokeLater(() -> {
@@ -99,41 +107,25 @@ public class TutorialGame extends JFrame {
         });
     }
 
-    private JProgressBar createProgressBar(int value) {
-        JProgressBar progressBar = new JProgressBar(0, 100);
-        progressBar.setValue(value);
-        progressBar.setStringPainted(true);
-        return progressBar;
-    }
-
     private void handleMovement(KeyEvent e) {
-        int moveAmount = 10;
+        int moveAmount = 10; // Adjust movement increment
         String direction = null;
 
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W -> {
-                tutorialPet.move(0, -moveAmount);
-                tutorialPet.walk();
-                direction = "up";
-                messageLabel.setText("You moved up!");
-            }
-            case KeyEvent.VK_A -> {
+            case KeyEvent.VK_A -> { // Move left
                 tutorialPet.move(-moveAmount, 0);
                 tutorialPet.walk();
                 direction = "left";
                 messageLabel.setText("You moved left!");
             }
-            case KeyEvent.VK_S -> {
-                tutorialPet.move(0, moveAmount);
-                tutorialPet.walk();
-                direction = "down";
-                messageLabel.setText("You moved down!");
-            }
-            case KeyEvent.VK_D -> {
+            case KeyEvent.VK_D -> { // Move right
                 tutorialPet.move(moveAmount, 0);
                 tutorialPet.walk();
                 direction = "right";
                 messageLabel.setText("You moved right!");
+            }
+            default -> {
+                // Ignore other key presses
             }
         }
 
@@ -145,9 +137,11 @@ public class TutorialGame extends JFrame {
     }
 
     private void checkMovementObjective() {
-        boolean allMovementsCompleted = movementCounts.values().stream().allMatch(count -> count >= 2);
+        // Check if left and right movements meet the required count
+        boolean leftCompleted = movementCounts.get("left") >= 2;
+        boolean rightCompleted = movementCounts.get("right") >= 2;
 
-        if (allMovementsCompleted && currentObjective == 1) {
+        if (leftCompleted && rightCompleted && currentObjective == 1) {
             currentObjective++;
             messageLabel.setText("Objective 2: Feed the pet using the Feed button!");
         }
@@ -157,18 +151,13 @@ public class TutorialGame extends JFrame {
         if (action.equals("Feed") && currentObjective == 2) {
             FoodConsumable food = new FoodConsumable(20);
             if (food.consume(tutorialPet)) {
-                hunger = Math.min(hunger + 20, 100);
-                hungerBar.setValue(hunger);
-                messageLabel.setText("You fed the pet! Hunger increased.");
+                messageLabel.setText("You fed the pet! Objective 3: Let the pet rest using the Sleep button!");
                 currentObjective++;
-                messageLabel.setText("Objective 3: Let the pet rest using the Sleep button!");
             }
         } else if (action.equals("Sleep") && currentObjective == 3) {
             SleepConsumable sleep = new SleepConsumable(20);
             if (sleep.consume(tutorialPet)) {
-                happiness = Math.min(happiness + 20, 100);
-                happinessBar.setValue(happiness);
-                messageLabel.setText("The pet rested! Happiness increased.");
+                messageLabel.setText("The pet rested! Tutorial Completed! Great job!");
                 JOptionPane.showMessageDialog(this, "Tutorial Completed! Great job!");
                 dispose(); // Close tutorial
             }
