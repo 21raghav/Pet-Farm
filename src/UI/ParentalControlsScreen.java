@@ -3,237 +3,231 @@ package UI;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.*;
+import java.nio.file.*;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List; // Correct List import
+import java.util.Timer;
 
-/**
- * The ParentalControlsScreen class provides a graphical user interface
- * for parents to manage playtime restrictions, reset game statistics,
- * revive pets, and access the game as a parent.
- */
 public class ParentalControlsScreen {
     private JFrame frame;
-    private JPanel mainPanel, controlPanel;
-    private JPasswordField passwordField;
-    private JButton loginButton, setRestrictionsButton, resetStatsButton, revivePetButton, playGameButton;
     private JCheckBox enableRestrictionsCheckBox;
     private JTextField startTimeField, endTimeField;
-    private JLabel statusLabel, playtimeLabel, avgSessionLabel;
-    private int totalPlayTime = 0; // Placeholder for total playtime in hours
-    private int sessionCount = 1;  // Placeholder for the number of sessions
+    private JLabel playtimeLabel, avgSessionLabel, statusLabel;
+    private JButton setRestrictionsButton, resetStatsButton, revivePetButton, playGameAsParentButton;
+    private MainScreen mainScreen;
 
-    // Hardcoded password
-    private static final String HARDCODED_PASSWORD = "myPassword"; // Replace with your password
+    private boolean restrictionsEnabled = false;
+    private LocalTime startTime, endTime;
+    private int totalPlayTime = 0;  // In minutes
+    private int sessionCount = 1;
+    private Timer playtimeTimer;
 
-    // List of pets
-    private List<Pet> pets = new ArrayList<>();
+    private List<Pet> pets = new ArrayList<>(); // Use java.util.List here
 
-    /**
-     * Constructor for the ParentalControlsScreen class.
-     * Initializes the main frame and sets up the login interface.
-     */
-    public ParentalControlsScreen() {
+    private static final String HARDCODED_PASSWORD = "parent123";
+    private static final String SAVE_FILE = "parental_controls.json";
+
+    public ParentalControlsScreen(MainScreen mainScreen) {
+        this.mainScreen = mainScreen;
+
+        // Load saved settings
+        loadParentalSettings();
+
         // Set up the frame
         frame = new JFrame("Parental Controls");
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        // Password protection
-        JLabel passwordLabel = new JLabel("Enter Password:");
-        passwordField = new JPasswordField(20);
-        loginButton = new JButton("Login");
-        statusLabel = new JLabel("Please enter the password to continue.");
-        statusLabel.setForeground(Color.RED);
-
-        mainPanel.add(passwordLabel);
-        mainPanel.add(passwordField);
-        mainPanel.add(loginButton);
-        mainPanel.add(statusLabel);
-
-        // Action listener for the login button
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String password = new String(passwordField.getPassword());
-                if (password.equals(HARDCODED_PASSWORD)) { // Verify with hardcoded password
-                    showParentalControls();
-                } else {
-                    statusLabel.setText("Incorrect password. Try again.");
-                }
-            }
-        });
-
-        frame.add(mainPanel);
-        frame.setSize(450, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        showPasswordScreen();
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);  // Fullscreen
         frame.setVisible(true);
+        mainScreen.setVisible(false);
     }
 
-    /**
-     * Displays the Parental Controls menu with options for setting playtime
-     * restrictions, resetting statistics, reviving pets, and playing the game.
-     */
-    private void showParentalControls() {
-        // Clear the main panel and set up the control panel
-        mainPanel.removeAll();
-        controlPanel = new JPanel();
-        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+    private void showPasswordScreen() {
+        frame.getContentPane().removeAll();
 
-        // Parental Limitations Section
-        JPanel restrictionsPanel = new JPanel();
-        restrictionsPanel.setLayout(new GridLayout(3, 2, 10, 10));
-        restrictionsPanel.setBorder(new TitledBorder("Playtime Restrictions"));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
 
-        enableRestrictionsCheckBox = new JCheckBox("Enable Restrictions");
-        enableRestrictionsCheckBox.setToolTipText("Enable or disable playtime restrictions for your child.");
+        JLabel label = new JLabel("Enter Password:");
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        startTimeField = new JTextField();
-        startTimeField.setToolTipText("Enter the start time (e.g., 09:00 for 9 AM).");
-        startTimeField.setBorder(BorderFactory.createTitledBorder("Start Time (HH:MM)"));
+        JPasswordField passwordField = new JPasswordField(20);
+        passwordField.setFont(new Font("Arial", Font.PLAIN, 18));
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        endTimeField = new JTextField();
-        endTimeField.setToolTipText("Enter the end time (e.g., 18:00 for 6 PM).");
-        endTimeField.setBorder(BorderFactory.createTitledBorder("End Time (HH:MM)"));
-
-        setRestrictionsButton = new JButton("Set Restrictions");
-
-        restrictionsPanel.add(enableRestrictionsCheckBox);
-        restrictionsPanel.add(new JLabel()); // Empty label for alignment
-        restrictionsPanel.add(startTimeField);
-        restrictionsPanel.add(endTimeField);
-        restrictionsPanel.add(setRestrictionsButton);
-
-        // Parental Statistics Section
-        JPanel statsPanel = new JPanel();
-        statsPanel.setLayout(new GridLayout(3, 1, 10, 10));
-        statsPanel.setBorder(new TitledBorder("Statistics"));
-
-        playtimeLabel = new JLabel("Total Playtime: " + totalPlayTime + " hours");
-        avgSessionLabel = new JLabel("Average Session Time: " + (totalPlayTime / sessionCount) + " hours");
-        resetStatsButton = new JButton("Reset Statistics");
-
-        statsPanel.add(playtimeLabel);
-        statsPanel.add(avgSessionLabel);
-        statsPanel.add(resetStatsButton);
-
-        // Revive Pet Section
-        JPanel revivePanel = new JPanel();
-        revivePanel.setBorder(new TitledBorder("Pet Revival"));
-        revivePetButton = new JButton("Revive All Pets");
-        revivePanel.add(revivePetButton);
-
-        // Play Game as Parent Section
-        JPanel playGamePanel = new JPanel();
-        playGamePanel.setBorder(new TitledBorder("Play Game"));
-        playGameButton = new JButton("Play Game as Parent");
-        playGamePanel.add(playGameButton);
-
-        // Add panels to the control panel
-        controlPanel.add(restrictionsPanel);
-        controlPanel.add(statsPanel);
-        controlPanel.add(revivePanel);
-        controlPanel.add(playGamePanel);
-
-        // Action listeners for buttons
-        setRestrictionsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean isEnabled = enableRestrictionsCheckBox.isSelected();
-                String startTime = startTimeField.getText();
-                String endTime = endTimeField.getText();
-                JOptionPane.showMessageDialog(frame, "Playtime restrictions " + (isEnabled ? "enabled" : "disabled") +
-                        " from " + startTime + " to " + endTime + ".");
+        JButton submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        submitButton.addActionListener(e -> {
+            String password = new String(passwordField.getPassword());
+            if (password.equals(HARDCODED_PASSWORD)) {
+                showParentalControls();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Incorrect password.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        resetStatsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                totalPlayTime = 0;
-                sessionCount = 1;
-                playtimeLabel.setText("Total Playtime: 0 hours");
-                avgSessionLabel.setText("Average Session Time: 0 hours");
-                JOptionPane.showMessageDialog(frame, "Statistics have been reset.");
-            }
-        });
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(passwordField);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(submitButton);
 
-        revivePetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reviveAllPets();
-            }
-        });
-
-        playGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                launchGameAsParent();
-            }
-        });
-
-        mainPanel.add(controlPanel);
+        frame.add(panel, BorderLayout.CENTER);
         frame.revalidate();
         frame.repaint();
     }
 
-    /**
-     * Revives all dead pets in the list.
-     */
-    private void reviveAllPets() {
-        boolean anyRevived = false;
-        for (Pet pet : pets) {
-            if (pet.isDead) {
-                pet.isDead = false;
-                anyRevived = true;
+    private void showParentalControls() {
+        frame.getContentPane().removeAll();
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel restrictionsPanel = createRestrictionsPanel();
+        JPanel statsPanel = createStatsPanel();
+        JPanel revivePanel = createRevivePanel();
+        JPanel playGamePanel = createPlayGamePanel(); // Add Play Game as Parent section
+
+        mainPanel.add(restrictionsPanel);
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(statsPanel);
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(revivePanel);
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(playGamePanel); // Add Play Game as Parent section
+
+        JButton backButton = new JButton("Back to Main Menu");
+        backButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        backButton.addActionListener(e -> {
+            saveParentalSettings();
+            frame.dispose();
+            mainScreen.setVisible(true);
+        });
+
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(backButton);
+
+        frame.add(new JScrollPane(mainPanel), BorderLayout.CENTER);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private JPanel createRestrictionsPanel() {
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+        panel.setBorder(new TitledBorder("Playtime Restrictions"));
+
+        enableRestrictionsCheckBox = new JCheckBox("Enable Restrictions");
+        enableRestrictionsCheckBox.setSelected(restrictionsEnabled);
+
+        startTimeField = new JTextField(startTime != null ? startTime.toString() : "HH:MM");
+        endTimeField = new JTextField(endTime != null ? endTime.toString() : "HH:MM");
+
+        setRestrictionsButton = new JButton("Set Restrictions");
+        setRestrictionsButton.addActionListener(e -> {
+            restrictionsEnabled = enableRestrictionsCheckBox.isSelected();
+            try {
+                startTime = LocalTime.parse(startTimeField.getText());
+                endTime = LocalTime.parse(endTimeField.getText());
+                JOptionPane.showMessageDialog(frame, "Restrictions updated successfully.");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, "Invalid time format. Use HH:MM.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
 
-        if (anyRevived) {
-            JOptionPane.showMessageDialog(frame, "All dead pets have been revived!");
-        } else {
-            JOptionPane.showMessageDialog(frame, "No pets needed reviving.");
+        panel.add(enableRestrictionsCheckBox);
+        panel.add(new JLabel());  // Spacer
+        panel.add(startTimeField);
+        panel.add(endTimeField);
+        panel.add(setRestrictionsButton);
+
+        return panel;
+    }
+
+    private JPanel createStatsPanel() {
+        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
+        panel.setBorder(new TitledBorder("Parental Statistics"));
+
+        playtimeLabel = new JLabel("Total Playtime: " + totalPlayTime + " minutes");
+        avgSessionLabel = new JLabel("Average Session Time: " + (totalPlayTime / sessionCount) + " minutes");
+
+        resetStatsButton = new JButton("Reset Statistics");
+        resetStatsButton.addActionListener(e -> {
+            totalPlayTime = 0;
+            sessionCount = 1;
+            updateStats();
+        });
+
+        panel.add(playtimeLabel);
+        panel.add(avgSessionLabel);
+        panel.add(resetStatsButton);
+
+        return panel;
+    }
+
+    private JPanel createRevivePanel() {
+        JPanel panel = new JPanel();
+        panel.setBorder(new TitledBorder("Revive Pet"));
+
+        revivePetButton = new JButton("Revive All Pets");
+        revivePetButton.addActionListener(e -> {
+            for (Pet pet : pets) {
+                pet.revive();
+            }
+            JOptionPane.showMessageDialog(frame, "All pets have been revived.");
+        });
+
+        panel.add(revivePetButton);
+        return panel;
+    }
+
+    private JPanel createPlayGamePanel() {
+        JPanel panel = new JPanel();
+        panel.setBorder(new TitledBorder("Play Game as Parent"));
+
+        playGameAsParentButton = new JButton("Play Game as Parent");
+        playGameAsParentButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(frame, "Game launched in parent mode!");
+            // Add logic to launch the game for the parent user here
+        });
+
+        panel.add(playGameAsParentButton);
+        return panel;
+    }
+
+    private void updateStats() {
+        playtimeLabel.setText("Total Playtime: " + totalPlayTime + " minutes");
+        avgSessionLabel.setText("Average Session Time: " + (totalPlayTime / sessionCount) + " minutes");
+    }
+
+    private void saveParentalSettings() {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(SAVE_FILE))) {
+            writer.write(String.format("{\"restrictionsEnabled\":%b,\"startTime\":\"%s\",\"endTime\":\"%s\",\"totalPlayTime\":%d,\"sessionCount\":%d}",
+                    restrictionsEnabled, startTime, endTime, totalPlayTime, sessionCount));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Launches the game interface for the parent to play the game.
-     * This is a placeholder implementation and should be replaced
-     * with the actual game launch logic.
-     */
-    private void launchGameAsParent() {
-        JOptionPane.showMessageDialog(frame, "Game launched for parent!");
-        // You might replace this with an actual game interface instantiation, e.g.,
-        // new GameInterface(); // Assuming GameInterface is the main game class
+    private void loadParentalSettings() {
+        try {
+            String json = Files.readString(Paths.get(SAVE_FILE));
+            // Parse JSON (use a library like Gson if preferred)
+        } catch (IOException e) {
+            // Defaults if no file exists
+        }
     }
 
-    /**
-     * Inner class to represent a Pet.
-     */
-    class Pet {
-        String name;
+    static class Pet {
         boolean isDead;
 
-        /**
-         * Constructor for the Pet class.
-         *
-         * @param name   The name of the pet.
-         * @param isDead The status indicating if the pet is dead.
-         */
-        Pet(String name, boolean isDead) {
-            this.name = name;
-            this.isDead = isDead;
+        void revive() {
+            isDead = false;
         }
     }
-
-    /**
-     * Main method to launch the Parental Controls screen.
-     *
-     * @param args Command-line arguments (not used).
-     */
-    public static void main(String[] args) {
-        new ParentalControlsScreen();
-    }
 }
-
