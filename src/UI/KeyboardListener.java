@@ -9,6 +9,11 @@ import java.awt.event.KeyListener;
  * and is designed to handle directional inputs (`W`, `A`, `S`, `D`).
  */
 public class KeyboardListener implements KeyListener {
+    private GameMenu gameMenu;
+
+    public KeyboardListener() {
+        this.gameMenu = gameMenu;
+    }
 
     /**
      * Invoked when a key is typed (pressed and released).
@@ -30,16 +35,16 @@ public class KeyboardListener implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
-                System.out.println("W pressed");
+                System.out.println("UP");
                 break;
             case KeyEvent.VK_A:
-                System.out.println("A pressed");
+                System.out.println("LEFT");
                 break;
             case KeyEvent.VK_S:
-                System.out.println("S pressed");
+                System.out.println("DOWN");
                 break;
             case KeyEvent.VK_D:
-                System.out.println("D pressed");
+                System.out.println("RIGHT");
                 break;
         }
     }
