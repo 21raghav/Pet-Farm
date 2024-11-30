@@ -1,5 +1,10 @@
 package UI;
 
+import Pets.Pet;
+import Game.DataManager;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -8,9 +13,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+
 public class GameMenu extends JFrame {
     private Image backgroundImage;
-    private Image dogImage;
     private Image statBarImage; // New variable for the stat bar image
     private Image healthIcon; // New variable for the health icon
     private Image inventoryIcon; // New variable for the inventory icon
@@ -28,8 +33,11 @@ public class GameMenu extends JFrame {
     private final JButton question1Button; // New variable for Question 1 button
     private final JButton question2Button; // New variable for Question 2 button
     private JPanel mainPanel;
+    private Pet petToSpawn;
 
-    public GameMenu() {
+    public GameMenu(Pet petToSpawn) {
+        this.petToSpawn = petToSpawn; // Save the pet instance for save functionality
+
         setTitle("Game Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);  // Set the frame to full screen
@@ -39,15 +47,12 @@ public class GameMenu extends JFrame {
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("Assets/GameImages/GameMenu.png"));
-            dogImage = ImageIO.read(new File("Assets/Idle.png"));
             statBarImage = ImageIO.read(new File("Assets/Images/statbar.png")); // Load the stat bar image
             healthIcon = ImageIO.read(new File("Assets/Images/healthicon.png")); // Load the health icon image
             inventoryIcon = ImageIO.read(new File("Assets/Images/InventoryIcon.png")); // Load the inventory icon image
             inventoryImage = ImageIO.read(new File("Assets/Images/Inventory.png")); // Load the inventory image
             stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon); // Initialize statistics
-            if (dogImage == null) {
-                throw new IOException("Dog image could not be loaded.");
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading images: " + e.getMessage(), "Image Load Error", JOptionPane.ERROR_MESSAGE);
@@ -59,30 +64,28 @@ public class GameMenu extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the background image
-                g.drawImage(dogImage, dogX, dogY, this); // Draw the dog image
                 stats.drawStats(g, getWidth(), getHeight()); // Draw the statistics
             }
         };
 
         mainPanel.setLayout(null);
+
+        // Add Save Button
+        JButton saveButton = new JButton("Save");
+        saveButton.setBounds(50, 50, 100, 40); // Top-left position
+        saveButton.addActionListener(e -> {
+            DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
+            JOptionPane.showMessageDialog(this, "Game saved!");
+        });
+        mainPanel.add(saveButton);
+
+        //pet spawn
+        JPanel character = petToSpawn.getAnimationPanel();
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        mainPanel.add(character);
+
         add(mainPanel);
-
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                dogX = (getWidth() - dogImage.getWidth(null)) / 2;
-                dogY = (getHeight() - dogImage.getHeight(null)) / 2;
-            }
-        });
-
         mainPanel.setFocusable(true);
-        mainPanel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                moveDog(e.getKeyCode());
-                mainPanel.repaint();
-            }
-        });
 
         // Setup inventory button and inventory class
         JButton inventoryButton = new JButton(new ImageIcon(inventoryIcon));
@@ -91,7 +94,7 @@ public class GameMenu extends JFrame {
         inventoryButton.setFocusPainted(false);
         mainPanel.add(inventoryButton);
         updateInventoryButtonPosition(inventoryButton);
-        
+
         // Initialize the Inventory with the statistics instance
         inventory = new Inventory(this, stats, inventoryImage, inventoryButton);
         inventoryButton.addActionListener(e -> {
@@ -108,7 +111,7 @@ public class GameMenu extends JFrame {
         sleepButton.setBounds(550, 350, 100, 30); // Example position and size
         // Action listener for the sleep button
         sleepButton.addActionListener(e -> {
-            new PetShelter(dogImage, health, happiness, sleep, hunger);
+            new PetShelter(this.petToSpawn, health, happiness, sleep, hunger);
             mainPanel.requestFocusInWindow();  // regain focus after interaction
         });
 
@@ -117,7 +120,7 @@ public class GameMenu extends JFrame {
         mainPanel.add(vetButton);
         vetButton.setBounds(200, 350, 100, 30);
         vetButton.addActionListener(e -> {
-            new VetShelter(dogImage, health, happiness, sleep, hunger);
+            new VetShelter(this.petToSpawn, health, happiness, sleep, hunger);
             mainPanel.requestFocusInWindow();
         });
 
@@ -130,7 +133,7 @@ public class GameMenu extends JFrame {
         // Action listener for Question 1 button
         question1Button.addActionListener(e -> {
             new Questions(); // Open the Questions window
-            mainPanel.requestFocusInWindow();  // regain focus after interaction
+            mainPanel.repaint();  // regain focus after interaction
         });
 
         // Initialize the Question 2 button
@@ -156,6 +159,12 @@ public class GameMenu extends JFrame {
             }
         });
 
+        mainPanel.setFocusable(true);
+        mainPanel.requestFocusInWindow();
+
+        KeyboardListener animalControls = new KeyboardListener(petToSpawn);
+        mainPanel.addKeyListener(animalControls);
+
         setVisible(true);
     }
 
@@ -165,38 +174,8 @@ public class GameMenu extends JFrame {
         inventoryButton.setBounds(buttonX, buttonY, inventoryIcon.getWidth(null), inventoryIcon.getHeight(null));
     }
 
-    private void moveDog(int keyCode) {
-        int frameWidth = getWidth();
-        int frameHeight = getHeight();
-        int heightBound = (getHeight() / 2) - 150;
-        int imageWidth = dogImage.getWidth(null);
-        int imageHeight = dogImage.getHeight(null);
-
-        switch (keyCode) {
-            case KeyEvent.VK_A:
-                if (dogX - dogSpeedX >= 0) {
-                    dogX -= dogSpeedX;
-                }
-                break;
-            case KeyEvent.VK_D:
-                if (dogX + dogSpeedX + imageWidth <= frameWidth) {
-                    dogX += dogSpeedX;
-                }
-                break;
-            case KeyEvent.VK_W:
-                if (dogY - dogSpeedY >= 0 && dogY >= heightBound) {
-                    dogY -= dogSpeedY;
-                }
-                break;
-            case KeyEvent.VK_S:
-                if (dogY + dogSpeedY + imageHeight <= frameHeight - 50) {
-                    dogY += dogSpeedY;
-                }
-                break;
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameMenu::new);
+    private void saveGame() {
+        DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
+        JOptionPane.showMessageDialog(this, "Game saved successfully!", "Save Game", JOptionPane.INFORMATION_MESSAGE);
     }
 }

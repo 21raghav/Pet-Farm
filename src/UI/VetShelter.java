@@ -1,5 +1,7 @@
 package UI;
 
+import Pets.Pet;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -13,7 +15,7 @@ public class VetShelter {
     private int sleep;
     private int hunger;
 
-    public VetShelter(Image dogImage, int health, int happiness, int sleep, int hunger) {
+    public VetShelter(Pet animal, int health, int happiness, int sleep, int hunger) {
 
         JFrame frame = new JFrame("Vet Shelter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,17 +32,12 @@ public class VetShelter {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                g.drawImage(dogImage, dogX, dogY, this); // Draw the dog image
                 stats.drawStats(g, getWidth(), getHeight()); // Draw the statistics
             }
         };
 
         // Set the layout manager to null for absolute positioning of components
         backgroundPanel.setLayout(null);
-
-        // Position the dog at the center bottom of the screen
-        dogX = (Toolkit.getDefaultToolkit().getScreenSize().width - dogImage.getWidth(null)) / 2 + 40;
-        dogY = Toolkit.getDefaultToolkit().getScreenSize().height - dogImage.getHeight(null) - 420; // 50 pixels above the bottom
 
         // Create an exit button
         JButton exitButton = new JButton("Exit");
@@ -58,6 +55,9 @@ public class VetShelter {
 
         // Add the exit button directly to the background panel
         backgroundPanel.add(exitButton);
+
+        JPanel character = animal.getAnimationPanel();
+        backgroundPanel.add(character);
 
         frame.getContentPane().add(backgroundPanel);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

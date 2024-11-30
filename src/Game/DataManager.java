@@ -5,83 +5,174 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The DataManager class handles reading and writing pet data to and from a CSV file.
- * It provides utility methods to initialize the CSV file and retrieve attributes
- * for specific pets based on their ID.
+ * The DataManager class handles reading and writing pet data to and from CSV files.
+ * It also manages save files for up to 4 pets.
  */
 public class DataManager {
+    private static final String DATA_DIRECTORY = "Data/";
+    private static final String STATE_FILE_PATH = DATA_DIRECTORY + "State.csv";
+    private static final int MAX_SAVE_FILES = 4;
+
+    // Ensure the Data directory exists
+    static {
+        File dataDir = new File(DATA_DIRECTORY);
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
+    }
 
     /**
-     * Writes default pet data to a CSV file located at "Data/State.csv".
-     * If the file or directory doesn't exist, this method creates it.
-     * The CSV file contains a header row followed by default attributes for pets.
+     * Initializes the `State.csv` file and individual pet save files.
+     */
+    public static void initializeSaveFiles() {
+        initializeStateFile();
+    }
+
+    /**
+     * Initializes the `State.csv` file with default pet data if it doesn't exist.
+     */
+    private static void initializeStateFile() {
+        File stateFile = new File(STATE_FILE_PATH);
+        if (!stateFile.exists()) {
+            writePetDataToCsv();
+        }
+    }
+
+    /**
+     * Writes default pet data to the `State.csv` file.
      */
     private static void writePetDataToCsv() {
-        // Define the data for the CSV file
         String[] headers = {"petID", "happiness", "hunger", "health", "sleep"};
         String[][] petData = {
-                {"1", "70", "70", "70", "70"},
-                {"2", "70", "70", "70", "70"},
-                {"3", "70", "70", "70", "70"},
-                {"4", "70", "70", "70", "70"}
+                {"1", "70", "70", "70", "70"}, // Fox
+                {"2", "70", "70", "70", "70"}, // Dog
+                {"3", "70", "70", "70", "70"}, // Cat
+                {"4", "70", "70", "70", "70"}  // Rat
         };
 
-        // Write data to the CSV file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Data/State.csv"))) {
-            // Write the header
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(STATE_FILE_PATH))) {
             writer.write(String.join(",", headers));
             writer.newLine();
-
-            // Write the rows of data
             for (String[] row : petData) {
                 writer.write(String.join(",", row));
                 writer.newLine();
             }
-
-            System.out.println("CSV file written successfully to " + "State.csv");
+            System.out.println("State.csv file initialized.");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Retrieves the attributes of a pet identified by its petID.
+     * Retrieves default attributes for a pet from the `State.csv` file using the pet ID.
      *
-     * @param petID The ID of the pet whose attributes need to be retrieved.
-     *              Valid IDs: { "1": Dog, "2": Fox, "3": Cat, "4": Rat }.
-     * @return A map containing the pet's attributes (e.g., happiness, hunger, health, sleep),
-     *         or an empty map if the petID is not found or an error occurs.
-     *         The keys of the map are attribute names (e.g., "happiness"),
-     *         and the values are the corresponding attribute values.
+     * @param petID The ID of the pet.
+     * @return A map containing the pet's default attributes.
      */
     public static Map<String, String> getPetAttributes(String petID) {
         Map<String, String> attributes = new HashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("Data/State.csv"))) {
-            // Read the header line
-            String headerLine = reader.readLine();
+        try (BufferedReader reader = new BufferedReader(new FileReader(STATE_FILE_PATH))) {
+            String headerLine = reader.readLine(); // Read headers
             if (headerLine == null) {
-                writePetDataToCsv();
-                headerLine = reader.readLine();
+                throw new IOException("State.csv is empty!");
             }
             String[] headers = headerLine.split(",");
 
-            // Read each row
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",");
-                if (values[0].equals(petID)) { // Check if petID matches
+                if (values[0].equals(petID)) { // Match the pet ID
                     for (int i = 1; i < headers.length; i++) {
-                        attributes.put(headers[i], values[i]); // Map each attribute
+                        attributes.put(headers[i], values[i]);
                     }
-                    return attributes; // Return attributes for the given petID
+                    break;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return attributes; // Empty if petID not found
+        return attributes;
     }
 
+    /**
+     * Saves the current state of the pet to a CSV file.
+     *
+     * @param slotName    The name of the pet (used as the save file name).
+     * @param attributes The pet's attributes to save.
+     */
+    public static void saveState(String slotName, Map<String, String> attributes) {
+        String filePath = DATA_DIRECTORY + slotName.toLowerCase() + ".csv";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(String.join(",", attributes.keySet()));
+            writer.newLine();
+            writer.write(String.join(",", attributes.values()));
+            System.out.println("State saved successfully for " + slotName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Loads the saved state of a pet from a CSV file.
+     *
+     * @param petName The name of the pet whose save file should be loaded.
+     * @return A map containing the pet's attributes, or an empty map if no save file is found.
+     */
+    public static Map<String, String> loadState(String petName) {
+        String filePath = DATA_DIRECTORY + petName.toLowerCase() + ".csv";
+        Map<String, String> attributes = new HashMap<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String[] headers = reader.readLine().split(",");
+            String[] values = reader.readLine().split(",");
+            for (int i = 0; i < headers.length; i++) {
+                attributes.put(headers[i], values[i]);
+            }
+        } catch (IOException e) {
+            System.out.println("No saved state found for " + petName + ". Starting a new game.");
+        }
+
+        return attributes;
+    }
+
+    /**
+     * Retrieves a list of save file names (without extensions).
+     *
+     * @return An array of save file names.
+     */
+    public static String[] getSaveFileNames() {
+        File folder = new File(DATA_DIRECTORY);
+        String[] saveFiles = folder.list((dir, name) -> name.endsWith(".csv") && !name.equals("State.csv"));
+        if (saveFiles == null) return new String[0];
+
+        for (int i = 0; i < saveFiles.length; i++) {
+            saveFiles[i] = saveFiles[i].replace(".csv", ""); // Remove the ".csv" extension
+        }
+
+        return saveFiles;
+    }
+
+    /**
+     * Retrieves the pet ID corresponding to a pet name.
+     *
+     * @param petName The name of the pet.
+     * @return The pet ID, or null if not found.
+     */
+    public static String getPetID(String petName) {
+        switch (petName.toLowerCase()) {
+            case "fox":
+                return "1";
+            case "dog":
+                return "2";
+            case "cat":
+                return "3";
+            case "rat":
+                return "4";
+            default:
+                return null;
+        }
+    }
 }
