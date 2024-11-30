@@ -19,7 +19,7 @@ public class statistics {
         this.healthIcon = healthIcon;
     }
 
-    public void updateStat(int statIndex, int increment) {
+    public void updateState(int statIndex, int increment) {
         switch (statIndex) {
             case 0: // Health
                 setHealth(Math.min(100, Math.max(0, health + increment)));

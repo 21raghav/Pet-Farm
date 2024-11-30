@@ -104,10 +104,8 @@ public class GameMenu extends JFrame {
         sleepButton = new JButton("Sleep");
         sleepButton.setVisible(true); // Initially hidden
         mainPanel.add(sleepButton);
-        
         // Set the position and size of the sleep button
         sleepButton.setBounds(550, 350, 100, 30); // Example position and size
-
         // Action listener for the sleep button
         sleepButton.addActionListener(e -> {
             new PetShelter(dogImage, health, happiness, sleep, hunger);
@@ -118,7 +116,6 @@ public class GameMenu extends JFrame {
         vetButton.setVisible(true);
         mainPanel.add(vetButton);
         vetButton.setBounds(200, 350, 100, 30);
-
         vetButton.addActionListener(e -> {
             new VetShelter(dogImage, health, happiness, sleep, hunger);
             mainPanel.requestFocusInWindow();
@@ -128,10 +125,8 @@ public class GameMenu extends JFrame {
         question1Button = new JButton("Question 1");
         question1Button.setVisible(true);
         mainPanel.add(question1Button);
-        
         // Set the position of the Question 1 button (left side)
         question1Button.setBounds(50, (getHeight() - 30) / 2, 100, 30); // Example position
-
         // Action listener for Question 1 button
         question1Button.addActionListener(e -> {
             new Questions(); // Open the Questions window
@@ -142,10 +137,8 @@ public class GameMenu extends JFrame {
         question2Button = new JButton("Question 2");
         question2Button.setVisible(true);
         mainPanel.add(question2Button);
-        
         // Set the position of the Question 2 button (right side)
         question2Button.setBounds(getWidth() - 150, (getHeight() - 30) / 2, 100, 30); // Example position
-
         // Action listener for Question 2 button
         question2Button.addActionListener(e -> {
             new Questions(); // Open the Questions window
@@ -164,9 +157,6 @@ public class GameMenu extends JFrame {
         });
 
         setVisible(true);
-    }
-    public void repaintMainPanel() {
-        mainPanel.repaint(); // Repaint the main panel
     }
 
     private void updateInventoryButtonPosition(JButton inventoryButton) {

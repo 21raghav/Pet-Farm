@@ -7,7 +7,7 @@ public class PetShelter {
     private int dogX; // Dog's X position
     private int dogY; // Dog's Y position
     private final JPanel backgroundPanel; // Background panel
-    private final statistics stats; // Statistics instance
+    private statistics stats; // Statistics instance
     private int health, happiness, sleep, hunger;
 
     public PetShelter(Image dogImage, int health, int happiness, int sleep, int hunger) {
