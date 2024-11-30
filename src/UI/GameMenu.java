@@ -1,19 +1,16 @@
 package UI;
 
-import Pets.Cat;
-import Pets.Dog;
 import Pets.Pet;
-import Pets.Rat;
+import Game.DataManager;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 
 public class GameMenu extends JFrame {
     private Image backgroundImage;
@@ -29,6 +26,8 @@ public class GameMenu extends JFrame {
     private Pet petToSpawn;
 
     public GameMenu(Pet petToSpawn) {
+        this.petToSpawn = petToSpawn; // Save the pet instance for save functionality
+
         setTitle("Game Menu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);  // Set the frame to full screen
@@ -40,7 +39,6 @@ public class GameMenu extends JFrame {
             healthIcon = ImageIO.read(new File("Assets/Images/healthicon.png")); // Load the health icon image
             inventoryIcon = ImageIO.read(new File("Assets/Images/InventoryIcon.png")); // Load the inventory icon image
             inventoryImage = ImageIO.read(new File("Assets/Images/Inventory.png")); // Load the inventory image
-
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading images: " + e.getMessage(), "Image Load Error", JOptionPane.ERROR_MESSAGE);
@@ -61,7 +59,7 @@ public class GameMenu extends JFrame {
 
                 // Draw health bar
                 g.drawImage(statBarImage, statBarX, statBarY, this); // Positioning the health stat bar
-                int healthFillWidth = (int)(statBarWidth * (health / 100.0)) - 4; // Subtracting for outline
+                int healthFillWidth = (int) (statBarWidth * (health / 100.0)) - 4; // Subtracting for outline
                 g.setColor(Color.RED);
                 g.fillRect(statBarX + 2, statBarY + 2, healthFillWidth, statBarHeight - 4); // Fill health bar
 
@@ -71,21 +69,21 @@ public class GameMenu extends JFrame {
                 // Draw happiness bar
                 statBarY += statBarHeight + 10; // Move down for the happiness bar
                 g.drawImage(statBarImage, statBarX, statBarY, this); // Positioning the happiness stat bar
-                int happinessFillWidth = (int)(statBarWidth * (happiness / 100.0)) - 4; // Subtracting for outline
+                int happinessFillWidth = (int) (statBarWidth * (happiness / 100.0)) - 4; // Subtracting for outline
                 g.setColor(Color.RED); // Different color for happiness
                 g.fillRect(statBarX + 2, statBarY + 2, happinessFillWidth, statBarHeight - 4); // Fill happiness bar
 
                 // Draw hunger bar
                 statBarY += statBarHeight + 10; // Move down for the hunger bar
                 g.drawImage(statBarImage, statBarX, statBarY, this); // Positioning the hunger stat bar
-                int hungerFillWidth = (int)(statBarWidth * (hunger / 100.0)) - 4; // Subtracting for outline
+                int hungerFillWidth = (int) (statBarWidth * (hunger / 100.0)) - 4; // Subtracting for outline
                 g.setColor(Color.RED); // Different color for hunger
                 g.fillRect(statBarX + 2, statBarY + 2, hungerFillWidth, statBarHeight - 4); // Fill hunger bar
 
                 // Draw sleep bar
                 statBarY += statBarHeight + 10; // Move down for the sleep bar
                 g.drawImage(statBarImage, statBarX, statBarY, this); // Positioning the sleep stat bar
-                int sleepFillWidth = (int)(statBarWidth * (sleep / 100.0)) - 4; // Subtracting for outline
+                int sleepFillWidth = (int) (statBarWidth * (sleep / 100.0)) - 4; // Subtracting for outline
                 g.setColor(Color.RED); // Different color for sleep
                 g.fillRect(statBarX + 2, statBarY + 2, sleepFillWidth, statBarHeight - 4); // Fill sleep bar
             }
@@ -93,12 +91,21 @@ public class GameMenu extends JFrame {
 
         mainPanel.setLayout(null);
 
+        // Add Save Button
+        JButton saveButton = new JButton("Save");
+        saveButton.setBounds(50, 50, 100, 40); // Top-left position
+        saveButton.addActionListener(e -> {
+            DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
+            JOptionPane.showMessageDialog(this, "Game saved!");
+        });
+        mainPanel.add(saveButton);
+
+
         JPanel character = petToSpawn.getAnimationPanel();
         character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
         mainPanel.add(character);
 
         add(mainPanel);
-
 
         mainPanel.setFocusable(true);
 
@@ -130,14 +137,18 @@ public class GameMenu extends JFrame {
         setVisible(true);
     }
 
+    private void saveGame() {
+        DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
+        JOptionPane.showMessageDialog(this, "Game saved successfully!", "Save Game", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void showInventoryDialog() {
-        // New variable for inventory item counts
         int[] itemCounts = {5, 3, 2, 4, 1, 6}; // Example counts for each item
 
         JDialog inventoryDialog = new JDialog(this, "Inventory", false);
         inventoryDialog.setSize(525, 225);
         inventoryDialog.setLocationRelativeTo(this);
-        inventoryDialog.setResizable(false); // Prevent resizing of the dialog
+        inventoryDialog.setResizable(false);
 
         JPanel inventoryPanel = new JPanel() {
             @Override
@@ -147,10 +158,8 @@ public class GameMenu extends JFrame {
                     g.drawImage(inventoryImage, 0, 0, getWidth(), getHeight(), this);
                 }
 
-                // Set font size
-                g.setFont(new Font("Arial", Font.BOLD, 20)); // Increase font size
+                g.setFont(new Font("Arial", Font.BOLD, 20));
 
-                // Draw inventory item counts at specific coordinates with different colors
                 g.setColor(Color.RED);
                 g.drawString(String.valueOf(itemCounts[0]), 145, 120); // Strawberry count
 
@@ -176,14 +185,8 @@ public class GameMenu extends JFrame {
     }
 
     private void updateInventoryButtonPosition(JButton inventoryButton) {
-        // Calculate the new position based on the current window size
-        int buttonX = getWidth() - inventoryIcon.getWidth(null) - 20; // Adjust X position to move it more to the right
-        int buttonY = 300; // Keep Y position constant or adjust as needed
+        int buttonX = getWidth() - inventoryIcon.getWidth(null) - 20;
+        int buttonY = 300;
         inventoryButton.setBounds(buttonX, buttonY, inventoryIcon.getWidth(null), inventoryIcon.getHeight(null));
     }
-
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> new GameMenu(this.petToSpawn));
-//    }
 }
