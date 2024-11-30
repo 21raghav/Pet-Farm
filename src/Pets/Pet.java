@@ -5,117 +5,157 @@ import Animation.AnimationState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * The abstract `Pet` class serves as the base class for all pet types in the application.
- * It provides common attributes and methods for managing the state of a pet,
- * including health, sleep level, and hunger level.
- */
 public abstract class Pet {
-
-    // Fields for idle animation frames (not yet used)
-    private Image[] idleFrames;
-
-    private Boolean isAttacking = false;
-    private Boolean isWalking = false;
-    private Boolean isMoving = false;
-
-    // Health attributes
-    private int currentHealth;
-    private int maxHealth;
-
-    private Animation animationPanel;
-
-    // Pet state attributes
-    private int sleepLevel;
-    private int hungerLevel;
-
+    private String name; // Store the pet's name
     private int x = 340; // Initial X position
     private int y = 100; // Initial Y position
 
-    private int screenWidth;
+    private int currentHealth = 100;
+    private int maxHealth = 100;
+    private int hungerLevel = 50;
+    private int sleepLevel = 50;
 
-    // Name of the pet
+    private Animation animationPanel;
+    private Map<String, Integer> inventory = new HashMap<>(); // Store inventory items
 
-    /**
-     * Constructs a Pet with a given name and initializes its health to 100.
-     *
-     * @param name The name of the pet.
-     */
     public Pet(String name, Animation animation) {
-        this.maxHealth = this.currentHealth = 100; // Initialize health to 100
+        this.name = name; // Store the pet's name
         this.animationPanel = animation;
-
-        // Get the screen size of the primary monitor
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-        // Get the width and height of the screen
-        this.screenWidth = screenSize.width;
-
     }
 
-    /**
-     * Gets the pet's maximum health.
-     *
-     * @return The pet's maximum health.
-     */
+    // Getters and setters for name
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Position
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    // Health, hunger, sleep
     public int getHealth() {
+        return currentHealth;
+    }
+
+    public void setHealth(int health) {
+        this.currentHealth = Math.min(health, maxHealth);
+    }
+
+    public int getMaxHealth() {
         return maxHealth;
     }
 
-    // Movement method
-    public void move(int dx, int dy) {
-        if (x+ dx < 0 || x +dx > 675) {
-            return;
-        }
-        x += dx;
-        y += dy;
-        animationPanel.setLocation(x, 150);
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
     }
 
-    /**
-     * Increases the pet's maximum health by a specified amount.
-     *
-     * @param health The amount to increase the maximum health.
-     */
     public void increaseHealth(int health) {
-        this.maxHealth += health;
+        this.currentHealth = Math.min(this.currentHealth + health, this.maxHealth);
     }
 
-    /**
-     * Gets the pet's current sleep level.
-     *
-     * @return The pet's sleep level.
-     */
-    public int getSleepLevel() {
-        return sleepLevel;
-    }
-
-    /**
-     * Sets the pet's sleep level to a specified value.
-     *
-     * @param sleepLevel The new sleep level.
-     */
-    public void setSleepLevel(int sleepLevel) {
-        this.sleepLevel = sleepLevel;
-    }
-
-    /**
-     * Gets the pet's current hunger level.
-     *
-     * @return The pet's hunger level.
-     */
     public int getHungerLevel() {
         return hungerLevel;
     }
 
-    /**
-     * Sets the pet's hunger level to a specified value.
-     *
-     * @param hungerLevel The new hunger level.
-     */
     public void setHungerLevel(int hungerLevel) {
         this.hungerLevel = hungerLevel;
+    }
+
+    public int getSleepLevel() {
+        return sleepLevel;
+    }
+
+    public void setSleepLevel(int sleepLevel) {
+        this.sleepLevel = sleepLevel;
+    }
+
+    // Inventory
+    public Map<String, Integer> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Map<String, Integer> inventory) {
+        this.inventory = inventory;
+    }
+
+    // Retrieve attributes for saving
+    public Map<String, String> getAttributes() {
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("name", name); // Include the name in the attributes
+        attributes.put("x", String.valueOf(x));
+        attributes.put("y", String.valueOf(y));
+        attributes.put("health", String.valueOf(currentHealth));
+        attributes.put("maxHealth", String.valueOf(maxHealth));
+        attributes.put("hunger", String.valueOf(hungerLevel));
+        attributes.put("sleep", String.valueOf(sleepLevel));
+
+        // Add inventory items to attributes
+        for (Map.Entry<String, Integer> item : inventory.entrySet()) {
+            attributes.put("inventory_" + item.getKey(), String.valueOf(item.getValue()));
+        }
+
+        return attributes;
+    }
+
+    // Load attributes from a map
+    public void setAttributes(Map<String, String> attributes) {
+        if (attributes.containsKey("name")) this.name = attributes.get("name");
+        if (attributes.containsKey("x")) this.x = Integer.parseInt(attributes.get("x"));
+        if (attributes.containsKey("y")) this.y = Integer.parseInt(attributes.get("y"));
+        if (attributes.containsKey("health")) this.currentHealth = Integer.parseInt(attributes.get("health"));
+        if (attributes.containsKey("maxHealth")) this.maxHealth = Integer.parseInt(attributes.get("maxHealth"));
+        if (attributes.containsKey("hunger")) this.hungerLevel = Integer.parseInt(attributes.get("hunger"));
+        if (attributes.containsKey("sleep")) this.sleepLevel = Integer.parseInt(attributes.get("sleep"));
+
+        // Load inventory items
+        inventory.clear();
+        for (String key : attributes.keySet()) {
+            if (key.startsWith("inventory_")) {
+                String itemName = key.substring("inventory_".length());
+                inventory.put(itemName, Integer.parseInt(attributes.get(key)));
+            }
+        }
+    }
+
+    public JPanel getAnimationPanel() {
+        return animationPanel.getPanel();
+    }
+
+    // Animation methods
+    public void walk() {
+        animationPanel.setAnimation(AnimationState.WALK);
+    }
+
+    public void stopWalking() {
+        animationPanel.setAnimation(AnimationState.IDLE);
+    }
+
+    public void attack() {
+        animationPanel.setAnimation(AnimationState.ATTACK);
+    }
+
+    public void stopAttacking() {
+        animationPanel.setAnimation(AnimationState.IDLE);
     }
 
     public void hurt() {
@@ -126,42 +166,10 @@ public abstract class Pet {
         animationPanel.setAnimation(AnimationState.DEATH);
     }
 
-    // Getters for state
-    public boolean isMoving() {
-        return isMoving;
-    }
-
-    public boolean isAttacking() {
-        return isAttacking;
-    }
-
-    public JPanel getAnimationPanel() {
-        return animationPanel.getPanel();
-    }
-
-    public void walk() {
-        isMoving = true;
-        animationPanel.setAnimation(AnimationState.WALK);
-    }
-
-    public void stopWalking() {
-        isMoving = false;
-        if (!isAttacking) { // Only go back to idle if not attacking
-            animationPanel.setAnimation(AnimationState.IDLE);
-        }
-    }
-
-    public void attack() {
-        isAttacking = true;
-        animationPanel.setAnimation(AnimationState.ATTACK);
-    }
-
-    public void stopAttacking() {
-        isAttacking = false;
-        if (isMoving) {
-            animationPanel.setAnimation(AnimationState.WALK);
-        } else {
-            animationPanel.setAnimation(AnimationState.IDLE);
-        }
+    public void move(int dx, int dy) {
+        if (x + dx < 0 || x + dx > 675) return;
+        x += dx;
+        y += dy;
+        animationPanel.setLocation(x, 150);
     }
 }

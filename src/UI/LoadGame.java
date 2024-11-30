@@ -1,22 +1,34 @@
 package UI;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import java.util.Map;
+import Game.DataManager;
+import Pets.Fox;
+import Pets.Dog;
+import Pets.Cat;
+import Pets.Rat;
+import Pets.Pet;
+import Animation.CatAnimation;
+import Animation.FoxAnimation;
+import Animation.DogAnimation;
+import Animation.RatAnimation;
 
 public class LoadGame extends JFrame {
+    private static final int MAX_SAVES = 4;
+
     public LoadGame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        
+
         // Create main panel with background image
         JPanel mainPanel = new JPanel() {
             @Override
-            @SuppressWarnings("CallToPrintStackTrace")
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 try {
@@ -27,49 +39,82 @@ public class LoadGame extends JFrame {
                 }
             }
         };
-        mainPanel.setLayout(null);  // Using null layout for absolute positioning
-        
-        // Create a single button
-        JButton slot1Btn = createButton();  // No need to pass position, handled in resize
-        
-        // Add button to panel
-        mainPanel.add(slot1Btn);
-        
-        // Add panel to frame
-        add(mainPanel);
-        
-        // Add component listener for resizing
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                resizeButton(slot1Btn);  // Adjust button size on resize
-            }
+        mainPanel.setLayout(null);
+
+        // Get save file names
+        String[] saveFiles = DataManager.getSaveFileNames();
+
+        // Create save slot buttons
+        for (int i = 0; i < MAX_SAVES; i++) {
+            JButton saveSlotButton = createSaveSlotButton(i + 1, (i < saveFiles.length) ? saveFiles[i] : null);
+            saveSlotButton.setBounds(110 + (i * 350), 390, 320, 240);
+            mainPanel.add(saveSlotButton);
+        }
+
+        // Back button
+        JButton backButton = new JButton("Back");
+        backButton.setBounds(50, 50, 100, 40);
+        backButton.addActionListener(e -> {
+            new MainScreen();
+            dispose();
         });
-        
+        mainPanel.add(backButton);
+
+        add(mainPanel);
         setVisible(true);
     }
-    
-    private JButton createButton() {
-        JButton button = new JButton();  // No text for the button
-        button.setBounds(110, 390, 320, 240);  // Set position and size
+
+    private JButton createSaveSlotButton(int slotNumber, String saveFileName) {
+        String buttonText = (saveFileName == null) ? "Slot " + slotNumber : saveFileName;
+        JButton button = new JButton(buttonText);
         button.setFocusPainted(false);
-        button.setBorderPainted(false);  // Show border for editing
-        button.setContentAreaFilled(false);  // Make background transparent
-        
-        // Add action listener to navigate to GameMenu
-        button.addActionListener(e -> { // Create an instance of GameMenu
-            dispose();  // Close the current LoadGame window
-        });
+        button.setBorderPainted(true);
+        button.setContentAreaFilled(true);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+
+        if (saveFileName == null) {
+            button.setEnabled(false); // Disable button if no save exists
+        } else {
+            button.addActionListener(e -> loadSaveFile(saveFileName));
+        }
 
         return button;
     }
-    
-    private void resizeButton(JButton button) {
-        // Example resizing logic; adjust as needed
-        button.setBounds(button.getX(), button.getY(), button.getWidth(), button.getHeight());  // Keep the button size fixed
-    }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(LoadGame::new);  // Run the LoadGame on the Event Dispatch Thread
+    private void loadSaveFile(String saveFileName) {
+        Map<String, String> attributes = DataManager.loadState(saveFileName);
+
+        if (!attributes.isEmpty()) {
+            Pet loadedPet;
+
+            switch (saveFileName.toLowerCase()) {
+                case "fox":
+                    loadedPet = new Fox(new FoxAnimation());
+                    break;
+                case "dog":
+                    loadedPet = new Dog(new DogAnimation());
+                    break;
+                case "cat":
+                    loadedPet = new Cat(new CatAnimation());
+                    break;
+                case "rat":
+                    loadedPet = new Rat(new RatAnimation());
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Unknown pet type.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+            }
+
+            // Set attributes for the loaded pet
+            loadedPet.setHealth(Integer.parseInt(attributes.get("health")));
+            loadedPet.setHungerLevel(Integer.parseInt(attributes.get("hunger")));
+            loadedPet.setSleepLevel(Integer.parseInt(attributes.get("sleep")));
+
+            // Launch GameMenu with the loaded pet
+            new GameMenu(loadedPet);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to load save file.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
