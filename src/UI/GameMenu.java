@@ -5,8 +5,9 @@ import Game.DataManager;
 import Pets.*;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,12 +25,23 @@ public class GameMenu extends JFrame {
     private Image sleepIcon;
     private Image inventoryIcon; // New variable for the inventory icon
     private Image inventoryImage; // New variable for inventory image
+
+    private Image questionImage;
+    private Image saveImage;
+    private Image vetImage;
+    private Image petImage;
+
+    //game should not be taking these stats but the database stats
     private int health;
     private int happiness;
     private int sleep;
     private int hunger;
+    ///////////////////////////////////
+
     private statistics stats; // Reference to the statistics class
-    private final Inventory inventory; // Reference to the Inventory class
+    private Inventory inventory; // Reference to the Inventory class
+//    private final JButton sleepButton; // New variable for the sleep button
+    private final JButton vetButton; // New variable for the vet button
     private final JButton question1Button; // New variable for Question 1 button
     private final JButton question2Button; // New variable for Question 2 button
     private final Pet petToSpawn;
@@ -57,6 +69,12 @@ public class GameMenu extends JFrame {
             inventoryIcon = ImageIO.read(new File("Assets/Images/InventoryIcon.png")); // Load the inventory icon image
             inventoryImage = ImageIO.read(new File("Assets/Images/Inventory.png")); // Load the inventory image
             stats = new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this); // Initialize statistics
+            questionImage = ImageIO.read(new File("Assets/Images/question.png")); // Load the inventory image
+            saveImage = ImageIO.read(new File("Assets/Images/SaveGame.png")); // Load the inventory image
+            petImage = ImageIO.read(new File("Assets/Images/PetShelterButton.png")); // Load the inventory image
+            vetImage = ImageIO.read(new File("Assets/Images/VetShelterButton.png")); // Load the inventory image
+//            stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this); // Initialize statistics
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,14 +93,20 @@ public class GameMenu extends JFrame {
 
         mainPanel.setLayout(null);
 
-        // Add Save Button
-        JButton saveButton = new JButton("Save");
-        saveButton.setBounds(50, 50, 100, 40); // Top-left position
+        ImageIcon saveIcon = new ImageIcon(saveImage); // Wrap the image in an ImageIcon
+        JButton saveButton = new JButton(saveIcon); // Create the button with the image icon
+        saveButton.setBounds(50, 50, saveIcon.getIconWidth(), saveIcon.getIconHeight()); // Adjust button size to image size
+        saveButton.setBorderPainted(false); // Do not paint the border
+        saveButton.setContentAreaFilled(false); // Do not fill the content area
+        saveButton.setFocusPainted(false); // Do not paint the focus indicator
+        saveButton.setOpaque(false); // Set the button to be transparent
+
         saveButton.addActionListener(e -> {
             DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
             JOptionPane.showMessageDialog(this, "Game saved!");
         });
-        mainPanel.add(saveButton);
+
+    mainPanel.add(saveButton); // Add the button to your panel
 
         //pet spawn
         JPanel character = petToSpawn.getAnimationPanel();
@@ -118,10 +142,15 @@ public class GameMenu extends JFrame {
         // New variable for the sleep button
         JButton sleepButton = new JButton("Sleep");
         sleepButton.setVisible(true); // Initially hidden
+        ImageIcon petIcon = new ImageIcon(petImage); // Wrap the image in an ImageIcon
+        sleepButton = new JButton(petIcon); // Initialize the petShelter button
+        sleepButton.setVisible(true);
+        sleepButton.setBounds(550, 300, petIcon.getIconWidth(), petIcon.getIconHeight()); // position and size
+        sleepButton.setBorderPainted(false); // Do not paint the border
+        sleepButton.setContentAreaFilled(false); // Do not fill the content area
+        sleepButton.setFocusPainted(false); // Do not paint the focus indicator
+        sleepButton.setOpaque(false); // Set the button to be transparent
         mainPanel.add(sleepButton);
-
-        // Set the position and size of the sleep button
-        sleepButton.setBounds(550, 350, 100, 30); // Example position and size
 
         // Action listener for the sleep button
         sleepButton.addActionListener(e -> {
@@ -130,14 +159,18 @@ public class GameMenu extends JFrame {
                 new PetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
         }
             catch(Exception error) { error.printStackTrace();}
-//            mainPanel.requestFocusInWindow();  // regain focus after interaction
+            //mainPanel.requestFocusInWindow();  // regain focus after interaction
         });
 
-        // New variable for the vet button
-        JButton vetButton = new JButton("Vet");
+        ImageIcon vet = new ImageIcon(vetImage);
+        vetButton = new JButton(vet);
         vetButton.setVisible(true);
+        vetButton.setBounds(150, 300, vet.getIconWidth(), vet.getIconHeight());
+        vetButton.setBorderPainted(false); // Do not paint the border
+        vetButton.setContentAreaFilled(false); // Do not fill the content area
+        vetButton.setFocusPainted(false); // Do not paint the focus indicator
+        vetButton.setOpaque(false); // Set the button to be transparent
         mainPanel.add(vetButton);
-        vetButton.setBounds(200, 350, 100, 30);
 
         vetButton.addActionListener(e -> {
             try {
@@ -147,32 +180,56 @@ public class GameMenu extends JFrame {
 //            mainPanel.repaint();
         });
 
-        // Initialize the Question 1 button
-        question1Button = new JButton("Question 1");
+        ImageIcon questionIcon1 = new ImageIcon(questionImage); // Wrap the image in an ImageIcon
+        question1Button = new JButton(questionIcon1); // Initialize the petShelter button
         question1Button.setVisible(true);
+        question1Button.setBounds(750, 350, questionIcon1.getIconWidth(), questionIcon1.getIconHeight()); // position and size
+        question1Button.setBorderPainted(false); // Do not paint the border
+        question1Button.setContentAreaFilled(false); // Do not fill the content area
+        question1Button.setFocusPainted(false); // Do not paint the focus indicator
+        question1Button.setOpaque(false); // Set the button to be transparent
         mainPanel.add(question1Button);
-
-        // Set the position of the Question 1 button (left side)
-        question1Button.setBounds(50, (getHeight() - 30) / 2, 100, 30); // Example position
 
         // Action listener for Question 1 button
         question1Button.addActionListener(e -> {
-            new Questions(); // Open the Questions window
-            mainPanel.repaint();  // regain focus after interaction
+            question1Button.setEnabled(false);  // Disable the button to prevent re-clicks
+            Questions questionsWindow = new Questions(inventory, stats, 1); // Open the Questions window !! TYPE 1 = GAMEMENU
+            mainPanel.requestFocusInWindow();  // regain focus after interaction
+
+            // Add a WindowListener to the questionsWindow to detect when it is closed
+            questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    question1Button.setEnabled(true);  // Re-enable the button once the window is closed
+                }
+            });
         });
 
         // Initialize the Question 2 button
-        question2Button = new JButton("Question 2");
+        ImageIcon questionIcon2 = new ImageIcon(questionImage);
+        question2Button = new JButton(questionIcon2);
         question2Button.setVisible(true);
+        question2Button.setBounds(getWidth() - 300, (getHeight() - 30) / 2, questionIcon2.getIconWidth(), questionIcon2.getIconHeight()); //position/size
+        question2Button.setBorderPainted(false); // Do not paint the border
+        question2Button.setContentAreaFilled(false); // Do not fill the content area
+        question2Button.setFocusPainted(false); // Do not paint the focus indicator
+        question2Button.setOpaque(false); // Set the button to be transparent
         mainPanel.add(question2Button);
-
         // Set the position of the Question 2 button (right side)
-        question2Button.setBounds(getWidth() - 150, (getHeight() - 30) / 2, 100, 30); // Example position
 
         // Action listener for Question 2 button
         question2Button.addActionListener(e -> {
-            new Questions(); // Open the Questions window
+            question2Button.setEnabled(false);  // Disable the button to prevent re-clicks
+            Questions questionsWindow = new Questions(inventory, stats, 1); // Open the Questions window !! TYPE 1 = GAMEMENU
             mainPanel.requestFocusInWindow();  // regain focus after interaction
+
+            // Add a WindowListener to the questionsWindow to detect when it is closed
+            questionsWindow.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    question2Button.setEnabled(true);  // Corrected to re-enable question2Button
+                }
+            });
         });
 
         // Component listeners for resizing and button updates
@@ -181,8 +238,8 @@ public class GameMenu extends JFrame {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 updateInventoryButtonPosition(inventoryButton);
                 // Update positions of question buttons on resize
-                question1Button.setBounds(50, (getHeight() - 30) / 2, 100, 30);
-                question2Button.setBounds(getWidth() - 150, (getHeight() - 30) / 2, 100, 30);
+                question1Button.setBounds(220, (getHeight() - 30) / 2 + 150, questionIcon1.getIconWidth(), questionIcon1.getIconHeight());
+                question2Button.setBounds(getWidth() - 330, (getHeight() - 30) / 2 + 150, questionIcon2.getIconWidth(), questionIcon2.getIconHeight());
             }
         });
 

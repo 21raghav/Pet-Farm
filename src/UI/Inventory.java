@@ -1,7 +1,6 @@
 package UI;
 
 import Game.DataManager;
-
 import java.awt.*;
 import java.util.Map;
 import javax.swing.*;
@@ -17,7 +16,7 @@ public class Inventory{
     private String saveFileName;
 
     // Update the statIndices array to reflect the new mapping
-    private final int[] statIndices = {0, 0, 0, 0, 1, 1}; // 0-3 increase hunger, 4-5 increase happiness
+    private final int[] statIndices = {2, 2, 2, 2, 1, 1}; // 0-3 increase hunger, 4-5 increase happiness
 
     public Inventory(String saveFileName, GameMenu gameMenu, statistics gameStats, Image inventoryImage, JButton inventoryButton, Map<String, String> data) {
         this.gameMenu = gameMenu;
@@ -130,11 +129,12 @@ public class Inventory{
         }
     }
 
-//    public void updateItemCount(int index, int count) {
-//        if (index >= 0 && index < itemCounts.length) {
-//            itemCounts[index] = count;
-//            inventoryDialog.repaint(); // Refresh the dialog to show updated counts
-//        }
-//    }
+    public void updateItemCount(int index, int count) {
+        if (index >= 0 && index < itemCounts.length) {
+            itemCounts[index] += count;
+            inventoryDialog.repaint(); // Refresh the dialog to show updated counts
+            DataManager.saveState("inventory.csv", this.data); // Save the updated state
+        }
+    }    
 }
 
