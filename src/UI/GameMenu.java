@@ -31,12 +31,10 @@ public class GameMenu extends JFrame {
     private Image vetImage;
     private Image petImage;
 
-    //game should not be taking these stats but the database stats
     private int health;
     private int happiness;
     private int sleep;
     private int hunger;
-    ///////////////////////////////////
 
     private statistics stats; // Reference to the statistics class
     private Inventory inventory; // Reference to the Inventory class
@@ -113,7 +111,8 @@ public class GameMenu extends JFrame {
         petToSpawn.unlock();
         petToSpawn.stopWalking();
 
-        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        character.setBounds(0, -200, character.getPreferredSize().width, character.getPreferredSize().height);
+        mainPanel.repaint();
         mainPanel.add(character);
 
         add(mainPanel);
