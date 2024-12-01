@@ -163,13 +163,15 @@ public class GameMenu extends JFrame {
             mainPanel.requestFocusInWindow();  // regain focus after interaction
             
             // Add a WindowListener to the questionsWindow to detect when it is closed
-            questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
+            questionsWindow.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    question1Button.setEnabled(true);  // Re-enable the button once the window is closed
+                    question2Button.setEnabled(true);  // Corrected to re-enable question2Button
                 }
             });
         });
+        
+        
 
         // Component listeners for resizing and button updates
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -195,11 +197,5 @@ public class GameMenu extends JFrame {
         int buttonX = getWidth() - inventoryIcon.getWidth(null) - 20;
         int buttonY = 300;
         inventoryButton.setBounds(buttonX, buttonY, inventoryIcon.getWidth(null), inventoryIcon.getHeight(null));
-    }
-
-    @SuppressWarnings("unused")
-    private void saveGame() {
-        DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
-        JOptionPane.showMessageDialog(this, "Game saved successfully!", "Save Game", JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -104,6 +104,7 @@ public class Inventory {
     }
 
     public void increaseRandomInventoryItem() {
+        System.out.println("reading inv");
         Random rand = new Random();
         int randomIndex = rand.nextInt(6);  // Generate a random number between 0 and 5
         updateItemCount(randomIndex, 1); // Increment the count of the item at the random index by 1
