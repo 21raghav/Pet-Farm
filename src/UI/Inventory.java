@@ -14,19 +14,21 @@ public class Inventory{
     private final JButton inventoryButton;
     private final GameMenu gameMenu;
     private final statistics gameStats; // Reference to the statistics instance
+    private String saveFileName;
 
     // Update the statIndices array to reflect the new mapping
     private final int[] statIndices = {0, 0, 0, 0, 1, 1}; // 0-3 increase hunger, 4-5 increase happiness
 
-    public Inventory(GameMenu gameMenu, statistics gameStats, Image inventoryImage, JButton inventoryButton) {
+    public Inventory(String saveFileName, GameMenu gameMenu, statistics gameStats, Image inventoryImage, JButton inventoryButton, Map<String, String> data) {
         this.gameMenu = gameMenu;
         this.gameStats = gameStats; // Initialize the statistics reference
         this.inventoryImage = inventoryImage;
         this.inventoryButton = inventoryButton;
+        this.saveFileName = saveFileName;
         setupInventoryDialog();
 
         // Interact with csv
-        this.data = DataManager.loadState("pet", "inventory.csv");
+        this.data = data;
         itemCounts[0] = Integer.parseInt(data.get("apple"));
         itemCounts[1] = Integer.parseInt(data.get("orange"));
         itemCounts[2] = Integer.parseInt(data.get("strawberry"));
@@ -104,7 +106,7 @@ public class Inventory{
                             break;
                     }
 
-                    DataManager.saveState("inventory.csv", this.data);
+                    DataManager.saveState(this.saveFileName, this.data);
 
                     increaseStat(statIndices[index], 10); // Call to increaseStat
                 } else {

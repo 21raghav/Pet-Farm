@@ -1,12 +1,16 @@
 package UI;
 
+import Animation.CatAnimation;
 import Game.DataManager;
-import Pets.Pet;
+import Pets.*;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -20,22 +24,22 @@ public class GameMenu extends JFrame {
     private Image sleepIcon;
     private Image inventoryIcon; // New variable for the inventory icon
     private Image inventoryImage; // New variable for inventory image
-    private int dogX, dogY;  // Dog's position
-    private int dogSpeedX = 10, dogSpeedY = 10;  // Dog's movement speed
-    private int health = 10;
-    private int happiness = 10;
-    private int sleep = 10;
-    private int hunger = 10;
+    private int health;
+    private int happiness;
+    private int sleep;
+    private int hunger;
     private statistics stats; // Reference to the statistics class
-    private Inventory inventory; // Reference to the Inventory class
-    private final JButton sleepButton; // New variable for the sleep button
-    private final JButton vetButton; // New variable for the vet button
+    private final Inventory inventory; // Reference to the Inventory class
     private final JButton question1Button; // New variable for Question 1 button
     private final JButton question2Button; // New variable for Question 2 button
-    private Pet petToSpawn;
+    private final Pet petToSpawn;
+    private String saveFileName;
 
     public GameMenu(Pet petToSpawn) {
         this.petToSpawn = petToSpawn; // Save the pet instance for save functionality
+
+        Map<String,String> data = this.loadData();
+        this.initializeStatistics(data);
 
         setTitle("Game Menu");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -52,7 +56,7 @@ public class GameMenu extends JFrame {
             sleepIcon = ImageIO.read(new File("Assets/Images/sleepicon.png")); // Load the health icon image
             inventoryIcon = ImageIO.read(new File("Assets/Images/InventoryIcon.png")); // Load the inventory icon image
             inventoryImage = ImageIO.read(new File("Assets/Images/Inventory.png")); // Load the inventory image
-            stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this); // Initialize statistics
+            stats = new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this); // Initialize statistics
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,7 +105,7 @@ public class GameMenu extends JFrame {
         updateInventoryButtonPosition(inventoryButton);
 
         // Initialize the Inventory with the statistics instance
-        inventory = new Inventory(this, stats, inventoryImage, inventoryButton);
+        inventory = new Inventory(this.saveFileName, this, stats, inventoryImage, inventoryButton, this.loadData());
         mainPanel.repaint();
         inventoryButton.addActionListener(e -> {
             inventory.toggleInventoryDisplay();
@@ -111,7 +115,8 @@ public class GameMenu extends JFrame {
         mainPanel.repaint();
 
         // Initialize the sleep button
-        sleepButton = new JButton("Sleep");
+        // New variable for the sleep button
+        JButton sleepButton = new JButton("Sleep");
         sleepButton.setVisible(true); // Initially hidden
         mainPanel.add(sleepButton);
 
@@ -122,13 +127,14 @@ public class GameMenu extends JFrame {
         sleepButton.addActionListener(e -> {
             try {
                 this.dispose();
-                new PetShelter(this.petToSpawn, new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+                new PetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
         }
             catch(Exception error) { error.printStackTrace();}
 //            mainPanel.requestFocusInWindow();  // regain focus after interaction
         });
 
-        vetButton = new JButton("Vet");
+        // New variable for the vet button
+        JButton vetButton = new JButton("Vet");
         vetButton.setVisible(true);
         mainPanel.add(vetButton);
         vetButton.setBounds(200, 350, 100, 30);
@@ -136,7 +142,7 @@ public class GameMenu extends JFrame {
         vetButton.addActionListener(e -> {
             try {
                 this.dispose();
-                new VetShelter(this.petToSpawn, new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+                new VetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
             } catch(Exception error) { error.printStackTrace();}
 //            mainPanel.repaint();
         });
@@ -187,6 +193,33 @@ public class GameMenu extends JFrame {
         mainPanel.addKeyListener(animalControls);
 
         setVisible(true);
+    }
+
+    private Map<String, String> loadData() {
+        if (this.petToSpawn instanceof Dog) {
+            this.saveFileName = "slot1.csv";
+        }
+        else if (this.petToSpawn instanceof Cat) {
+            this.saveFileName = "slot2.csv";
+        }
+        else if (this.petToSpawn instanceof Fox) {
+            this.saveFileName = "slot3.csv";
+        }
+        else if (this.petToSpawn instanceof Rat) {
+            this.saveFileName = "slot4.csv";
+        }
+        else {
+            return new HashMap<>();
+        }
+
+        return DataManager.loadState("", this.saveFileName);
+    }
+
+    private void initializeStatistics(Map<String,String> data) {
+        this.health = Integer.parseInt(data.get("health"));
+        this.happiness = Integer.parseInt(data.get("happiness"));
+        this.hunger = Integer.parseInt(data.get("hunger"));
+        this.sleep = Integer.parseInt(data.get("sleep"));
     }
 
     private void updateInventoryButtonPosition(JButton inventoryButton) {
