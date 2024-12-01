@@ -84,6 +84,11 @@ public class ParentalControlsScreen {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set frame to fullscreen
         frame.setVisible(true);
         mainScreen.setVisible(false);
+
+        setRestrictionsButton.addActionListener(e -> setPlaytimeRestrictions());
+        resetStatsButton.addActionListener(e -> resetStatistics());
+        revivePetButton.addActionListener(e -> reviveAllPets());
+        playGameButton.addActionListener(e -> launchGameAsParent());
     }
 
     private void handlePasswordSubmission() {
@@ -177,6 +182,26 @@ public class ParentalControlsScreen {
         frame.repaint();
     }
 
+    private void setPlaytimeRestrictions() {
+        if (enableRestrictionsCheckBox.isSelected()) {
+            String startTime = startTimeField.getText();
+            String endTime = endTimeField.getText();
+            // Implement logic to set playtime restrictions
+            JOptionPane.showMessageDialog(frame, "Playtime restrictions set from " + startTime + " to " + endTime);
+        } else {
+            JOptionPane.showMessageDialog(frame, "Playtime restrictions disabled.");
+        }
+    }
+
+    private void resetStatistics() {
+        // Implement logic to reset statistics
+        totalPlayTime = 0;
+        sessionCount = 1;
+        playtimeLabel.setText("Total Playtime: " + totalPlayTime + " hours");
+        avgSessionLabel.setText("Average Session Time: " + (totalPlayTime / sessionCount) + " hours");
+        JOptionPane.showMessageDialog(frame, "Statistics have been reset.");
+    }
+
     private void reviveAllPets() {
         boolean anyRevived = false;
         for (Pet pet : pets) {
@@ -195,6 +220,7 @@ public class ParentalControlsScreen {
 
     private void launchGameAsParent() {
         JOptionPane.showMessageDialog(frame, "Game launched for parent!");
+        // Implement logic to launch the game with parental controls
     }
 
     static class Pet {

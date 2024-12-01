@@ -28,6 +28,8 @@ public class GameMenu extends JFrame {
     private Image inventoryIcon; // New variable for the inventory icon
     private Image inventoryImage; // New variable for inventory image
 
+    private Map<String,String> data;
+
     private Image questionImage;
     private Image saveImage;
     private Image vetImage;
@@ -52,6 +54,9 @@ public class GameMenu extends JFrame {
 
         Map<String,String> data = this.loadData();
         this.initializeStatistics(data);
+
+        this.data = this.loadData();
+        this.initializeStatistics(this.data);
 
         setTitle("Game Menu");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -119,33 +124,33 @@ public class GameMenu extends JFrame {
                 dialog.setModal(false); // Make it non-modal
                 dialog.setSize(600, 100);
                 dialog.setLayout(new FlowLayout());
-            
+
                 // Create the label with a custom font
                 JLabel messageLabel = new JLabel("Your pet has died! Health is empty...");
                 messageLabel.setFont(new Font("Serif", Font.BOLD, 24)); // Set the font size to 24 and make it bold
                 dialog.add(messageLabel);
-            
+
                 dialog.setLocationRelativeTo(null); // Center on screen
-            
+
                 // Set a timer to close the dialog automatically after 6 seconds
                 new Timer(6000, new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         dialog.dispose();
+                        dispose();
                     }
                 }).start();
-            
+
                 dialog.setVisible(true);
             });
-            
+
         }
         else{
             petToSpawn.unlock();
             petToSpawn.stopWalking();
         }
-        
 
-        character.setBounds(0, -200, character.getPreferredSize().width, character.getPreferredSize().height);
-        mainPanel.repaint();
+
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
         mainPanel.add(character);
 
         add(mainPanel);
@@ -161,7 +166,7 @@ public class GameMenu extends JFrame {
         updateInventoryButtonPosition(inventoryButton);
 
         // Initialize the Inventory with the statistics instance
-        inventory = new Inventory(this.saveFileName, this, stats, inventoryImage, inventoryButton, this.loadData());
+        inventory = new Inventory(this.saveFileName, this, stats, inventoryImage, inventoryButton, this.data);
         mainPanel.repaint();
         inventoryButton.addActionListener(e -> {
             inventory.toggleInventoryDisplay();
@@ -245,7 +250,7 @@ public class GameMenu extends JFrame {
             });
         });
 
-        
+
 
         // Initialize the Question 2 button
         ImageIcon questionIcon2 = new ImageIcon(questionImage);

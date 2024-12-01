@@ -90,7 +90,8 @@ public class DataManager {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            DataManager.resetState("State.csv");
+            return getPetAttributes(petID);
         }
 
         return attributes;
@@ -132,7 +133,8 @@ public class DataManager {
                 attributes.put(headers[i], values[i]);
             }
         } catch (IOException e) {
-            System.out.println("No saved state found for " + petName + ". Starting a new game.");
+            DataManager.resetState(file);
+            return loadState(petName, file);
         }
 
         return attributes;
@@ -153,6 +155,23 @@ public class DataManager {
         }
 
         return saveFiles;
+    }
+
+    public static void resetState(String fileName) {
+        var newData = new HashMap<String, String>();
+
+        newData.put("orange", "0");
+        newData.put("banana", "0");
+        newData.put("sleep", "50");
+        newData.put("apple", "0");
+        newData.put("bbone", "0");
+        newData.put("happiness", "50");
+        newData.put("strawberry", "0");
+        newData.put("health", "50");
+        newData.put("ybone", "0");
+        newData.put("hunger", "50");
+
+        DataManager.saveState(fileName, newData);
     }
 
     /**

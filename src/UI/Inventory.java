@@ -1,6 +1,7 @@
 package UI;
 
 import Game.DataManager;
+
 import java.awt.*;
 import java.util.Map;
 import javax.swing.*;
@@ -8,7 +9,7 @@ import javax.swing.*;
 public class Inventory{
     private JDialog inventoryDialog;
     private final int[] itemCounts = {0,0,0,0,0,0}; // Example counts for each item
-    private Map<String, String> data;
+    private final Map<String, String> data;
     private final Image inventoryImage;
     private final JButton inventoryButton;
     private final GameMenu gameMenu;
@@ -107,7 +108,7 @@ public class Inventory{
 
                     DataManager.saveState(this.saveFileName, this.data);
                     increaseStat(statIndices[index], 10); // Call to increaseStat
-                    
+
                 } else {
                     JOptionPane.showMessageDialog(inventoryDialog, "No more items left!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -133,8 +134,30 @@ public class Inventory{
         if (index >= 0 && index < itemCounts.length) {
             itemCounts[index] += count;
             inventoryDialog.repaint(); // Refresh the dialog to show updated counts
-            DataManager.saveState("inventory.csv", this.data); // Save the updated state
+            switch(index) {
+                case 0:
+                    data.put("apple", String.valueOf(Integer.parseInt(data.get("apple")) + 1));
+                    break;
+                case 1:
+                    data.put("orange", String.valueOf(Integer.parseInt(data.get("orange")) + 1));
+                    break;
+                case 2:
+                    data.put("strawberry", String.valueOf(Integer.parseInt(data.get("strawberry")) + 1));
+                    break;
+                case 3:
+                    data.put("banana", String.valueOf(Integer.parseInt(data.get("banana")) + 1));
+                    break;
+                case 4:
+                    data.put("ybone", String.valueOf(Integer.parseInt(data.get("ybone")) + 1));
+                    break;
+                case 5:
+                    data.put("bbone", String.valueOf(Integer.parseInt(data.get("bbone")) + 1));
+                    break;
+
+            }
+
+            DataManager.saveState(saveFileName, data); // Save the updated state
         }
-    }    
+    }
 }
 
