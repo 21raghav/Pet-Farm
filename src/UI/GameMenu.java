@@ -151,7 +151,7 @@ public class GameMenu extends JFrame {
         ImageIcon vet = new ImageIcon(vetImage);
         vetButton = new JButton(vet);
         vetButton.setVisible(true);
-        vetButton.setBounds(200, 350, vet.getIconWidth(), vet.getIconHeight());
+        vetButton.setBounds(150, 300, vet.getIconWidth(), vet.getIconHeight());
         vetButton.setBorderPainted(false); // Do not paint the border
         vetButton.setContentAreaFilled(false); // Do not fill the content area
         vetButton.setFocusPainted(false); // Do not paint the focus indicator

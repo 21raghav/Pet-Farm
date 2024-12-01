@@ -37,7 +37,7 @@ public class PetShelter {
 
         ImageIcon question = new ImageIcon("Assets/Images/question.png");
         JButton questionButton = new JButton(question);
-        questionButton.setBounds(800, 150, question.getIconWidth(), question.getIconHeight()); // Adjust positioning as needed
+        questionButton.setBounds(10, 100, question.getIconWidth(), question.getIconHeight()); // Adjust positioning as needed
         questionButton.setBorderPainted(false); // Removes the border around the button
         questionButton.setContentAreaFilled(false); // Ensures the background inside the button is not filled
         questionButton.setFocusPainted(false); // Removes the focus indicator when the button is clicked
