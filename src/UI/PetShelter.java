@@ -39,6 +39,7 @@ public class PetShelter {
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> {
             frame.dispose();
+            new GameMenu(animal);
         });
         exitButton.setOpaque(true);
         exitButton.setContentAreaFilled(true);
@@ -51,6 +52,9 @@ public class PetShelter {
         backgroundPanel.add(exitButton);
 
         JPanel character = animal.getAnimationPanel();
+        animal.sleep();
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        backgroundPanel.addKeyListener(new KeyboardListener(animal));
         backgroundPanel.add(character);
 
         backgroundPanel.setFocusable(true);
@@ -59,7 +63,6 @@ public class PetShelter {
         
         frame.getContentPane().add(backgroundPanel);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(false);
         frame.setVisible(true);
     }
 }

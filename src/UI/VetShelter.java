@@ -43,6 +43,7 @@ public class VetShelter {
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> {
             frame.dispose();
+            new GameMenu(animal);
         });
 
         // Set the button transparent and no border
@@ -57,11 +58,17 @@ public class VetShelter {
         backgroundPanel.add(exitButton);
 
         JPanel character = animal.getAnimationPanel();
+        animal.sleep();
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        backgroundPanel.addKeyListener(new KeyboardListener(animal));
         backgroundPanel.add(character);
+
+        backgroundPanel.setFocusable(true);
+        backgroundPanel.requestFocusInWindow();
+        frame.setVisible(true);
 
         frame.getContentPane().add(backgroundPanel);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(false);
         frame.setVisible(true);
     }
 }
