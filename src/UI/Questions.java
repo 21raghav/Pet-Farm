@@ -19,8 +19,11 @@ public class Questions extends JFrame {
     private final JButton[] answerButtons;
     private final JLabel questionLabel;
     private Inventory inventory;
+    private Random random;
+    private int type;
+    private statistics stats;
 
-    public Questions(Inventory inventory) {
+    public Questions(Inventory inventory, statistics stats, int type) {
         this.inventory = inventory;
         setTitle("Questions");
         setSize(800, 600);
@@ -28,6 +31,10 @@ public class Questions extends JFrame {
         setAlwaysOnTop(true);
         setUndecorated(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  // Changed to ensure windowClosed events are fired
+        this.inventory = inventory;
+        this.type = type;
+        this.stats = stats;
+        random = new Random();  // Create a Random object for index generation
         
         initializeQuestions();
         selectRandomQuestion();
@@ -111,10 +118,33 @@ public class Questions extends JFrame {
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
             int selectedIndex = Integer.parseInt(clickedButton.getActionCommand());
-            if (correctAnswerIndexMap.get(currentQuestion) == selectedIndex) {
+            if (correctAnswerIndexMap.get(currentQuestion) == selectedIndex) 
+            {
                 JOptionPane.showMessageDialog(Questions.this, "Correct!");
-            } else {
+                if(type == 1){
+                    int randomIndex = random.nextInt(6);  // Generate a random index between 0 and 5
+                    inventory.updateItemCount(randomIndex, 1);  // Assuming you want to increase the first item in the inventory
+                }
+                if(type == 2){
+                    stats.updateState(3, 20);
+                }
+                if(type == 3) {
+                    stats.updateState(0, 20);
+                    
+                }
+            }
+            else {
                 JOptionPane.showMessageDialog(Questions.this, "Incorrect!");
+                if(type == 1){
+                    stats.updateState(1, -5);
+                    stats.updateState(2, -5);
+                }
+                if(type == 2){
+                    stats.updateState(3, -5);
+                }
+                if(type == 3){
+                    stats.updateState(0, -5);
+                }
             }
             dispose();  // Close the questions window
         }

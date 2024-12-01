@@ -43,6 +43,7 @@ public class statistics {
                 break;
             case 3: // Sleep
                 setSleep(Math.min(100, Math.max(0, sleep + increment)));
+                System.out.println(sleep);
                 gameMenu.repaint();
                 break;
             default:
