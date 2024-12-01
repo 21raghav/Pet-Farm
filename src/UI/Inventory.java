@@ -1,11 +1,12 @@
 package UI;
 
 import java.awt.*;
+import java.util.Random;
 import javax.swing.*;
 
 public class Inventory {
     private JDialog inventoryDialog;
-    private final int[] itemCounts = {5, 3, 2, 4, 1, 6}; // Example counts for each item
+    private int[] itemCounts = {5, 3, 2, 4, 1, 6}; // Example counts for each item
     private final Image inventoryImage;
     private final JButton inventoryButton;
     private final GameMenu gameMenu;
@@ -96,6 +97,16 @@ public class Inventory {
             itemCounts[index] = count;
             inventoryDialog.repaint(); // Refresh the dialog to show updated counts
         }
+    }
+
+    public void incrementItemCount(int index, int increment){
+        itemCounts[index] += increment;
+    }
+
+    public void increaseRandomInventoryItem() {
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(6);  // Generate a random number between 0 and 5
+        updateItemCount(randomIndex, 1); // Increment the count of the item at the random index by 1
     }
 }
 

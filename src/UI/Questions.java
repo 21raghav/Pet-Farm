@@ -17,8 +17,9 @@ public class Questions extends JFrame {
     private String currentQuestion;
     private final JButton[] answerButtons;
     private final JLabel questionLabel;
+    private Inventory inventory;
 
-    public Questions() {
+    public Questions(Inventory inventory) {
         setTitle("Questions");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -29,6 +30,8 @@ public class Questions extends JFrame {
         // Initialize data before UI components
         initializeQuestions();
         selectRandomQuestion();
+
+        this.inventory = inventory;
     
         // Create main panel with custom painting
         JPanel mainPanel = new JPanel() {
@@ -120,6 +123,7 @@ public class Questions extends JFrame {
             String[] correctAnswers = answersMap.get(currentQuestion);
             if (correctAnswers != null && selectedAnswer.equals(correctAnswers[selectedIndex])) {
                 JOptionPane.showMessageDialog(Questions.this, "Correct!");
+                inventory.increaseRandomInventoryItem();  // Call to increase random inventory item
                 
 
             } else {

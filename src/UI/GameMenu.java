@@ -3,6 +3,9 @@ package UI;
 import Game.DataManager;
 import Pets.Pet;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -134,8 +137,17 @@ public class GameMenu extends JFrame {
         question1Button.setBounds(50, (getHeight() - 30) / 2, 100, 30); // Example position
         // Action listener for Question 1 button
         question1Button.addActionListener(e -> {
-            new Questions(); // Open the Questions window
-            mainPanel.repaint();  // regain focus after interaction
+            question1Button.setEnabled(false);  // Disable the button to prevent re-clicks
+            Questions questionsWindow = new Questions(inventory); // Open the Questions window
+            mainPanel.requestFocusInWindow();  // regain focus after interaction
+            
+            // Add a WindowListener to the questionsWindow to detect when it is closed
+            questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    question1Button.setEnabled(true);  // Re-enable the button once the window is closed
+                }
+            });
         });
 
         // Initialize the Question 2 button
@@ -146,8 +158,17 @@ public class GameMenu extends JFrame {
         question2Button.setBounds(getWidth() - 150, (getHeight() - 30) / 2, 100, 30); // Example position
         // Action listener for Question 2 button
         question2Button.addActionListener(e -> {
-            new Questions(); // Open the Questions window
+            question2Button.setEnabled(false);  // Disable the button to prevent re-clicks
+            Questions questionsWindow = new Questions(inventory); // Open the Questions window
             mainPanel.requestFocusInWindow();  // regain focus after interaction
+            
+            // Add a WindowListener to the questionsWindow to detect when it is closed
+            questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    question1Button.setEnabled(true);  // Re-enable the button once the window is closed
+                }
+            });
         });
 
         // Component listeners for resizing and button updates
