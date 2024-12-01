@@ -103,7 +103,7 @@ public class DataManager {
      * @param attributes The pet's attributes to save.
      */
     public static void saveState(String slotName, Map<String, String> attributes) {
-        String filePath = DATA_DIRECTORY + slotName.toLowerCase() + ".csv";
+        String filePath = DATA_DIRECTORY + slotName.toLowerCase();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(String.join(",", attributes.keySet()));
             writer.newLine();
@@ -121,8 +121,8 @@ public class DataManager {
      * @param petName The name of the pet whose save file should be loaded.
      * @return A map containing the pet's attributes, or an empty map if no save file is found.
      */
-    public static Map<String, String> loadState(String petName) {
-        String filePath = DATA_DIRECTORY + petName.toLowerCase() + ".csv";
+    public static Map<String, String> loadState(String petName, String file) {
+        String filePath = DATA_DIRECTORY + file;
         Map<String, String> attributes = new HashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
