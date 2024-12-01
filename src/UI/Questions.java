@@ -113,7 +113,6 @@ public class Questions extends JFrame {
             int selectedIndex = Integer.parseInt(clickedButton.getActionCommand());
             if (correctAnswerIndexMap.get(currentQuestion) == selectedIndex) {
                 JOptionPane.showMessageDialog(Questions.this, "Correct!");
-                inventory.increaseRandomInventoryItem();  // Assuming method to increase inventory item
             } else {
                 JOptionPane.showMessageDialog(Questions.this, "Incorrect!");
             }
