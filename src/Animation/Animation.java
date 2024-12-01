@@ -6,6 +6,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Animation extends JPanel{
     protected BufferedImage[] idleFrames;
@@ -14,10 +17,19 @@ public abstract class Animation extends JPanel{
     protected BufferedImage[] hurtFrames;
     protected BufferedImage[] walkFrames;
     protected boolean flipHorizontally = false;
+    private boolean isLocked = false;
 
     private BufferedImage[] currentAnimation; // Tracks which animation is playing
     private int currentFrame = 0;
-    private final Timer animationTimer;
+    private ScheduledExecutorService scheduler;
+
+    public void lock() {
+        this.isLocked = true;
+    }
+
+    public void unlock() {
+        this.isLocked = false;
+    }
 
     private int x = 340; // x-coordinate of the Dog
     private int y = 150; // y-coordinate of the Dog
@@ -34,11 +46,12 @@ public abstract class Animation extends JPanel{
 
     @Override
     public void setLocation(int x, int y) {
-
-        flipHorizontally = this.x > x;
-        this.x = x;
-        this.y = y;
-        repaint();  // Repaint the panel with the new position
+        if (!isLocked) {
+            flipHorizontally = this.x > x;
+            this.x = x;
+            this.y = y;
+            repaint();  // Repaint the panel with the new position
+        }
     }
 
 
@@ -58,15 +71,15 @@ public abstract class Animation extends JPanel{
         int panelHeight = 900;  // Height of the panel
         setPreferredSize(new Dimension(panelWidth, panelHeight));
 
-        animationTimer = new Timer(100, e -> {
+        scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> {
             currentFrame = (currentFrame + 1) % currentAnimation.length;
-            repaint();
-        });
+            repaint(); // Repaint on the EDT
+        }, 0, 100, TimeUnit.MILLISECONDS); // Update every 100ms (10 FPS)
 
         this.setOpaque(false);
         // Start with idle animation
         this.setAnimation(AnimationState.IDLE);
-        animationTimer.start();
     }
 
 
@@ -90,19 +103,22 @@ public abstract class Animation extends JPanel{
     }
 
     public void setAnimation(AnimationState state) {
-        if (currentState != state) {
-            currentState = state;
-            currentFrame = 0; // Reset to first frame
-            switch (state) {
-                case IDLE -> currentAnimation = idleFrames;
-                case ATTACK -> currentAnimation = attackFrames;
-                case DEATH -> currentAnimation = deathFrames;
-                case HURT -> currentAnimation = hurtFrames;
-                case WALK -> currentAnimation = walkFrames;
-            }
-            // Fallback to idle if the desired animation is null
-            if (currentAnimation == null || currentAnimation.length == 0) {
-                currentAnimation = idleFrames;
+        if (!isLocked) {
+
+            if (currentState != state) {
+                currentState = state;
+                currentFrame = 0; // Reset to first frame
+                switch (state) {
+                    case IDLE -> currentAnimation = idleFrames;
+                    case ATTACK -> currentAnimation = attackFrames;
+                    case DEATH -> currentAnimation = deathFrames;
+                    case HURT -> currentAnimation = hurtFrames;
+                    case WALK -> currentAnimation = walkFrames;
+                }
+                // Fallback to idle if the desired animation is null
+                if (currentAnimation == null || currentAnimation.length == 0) {
+                    currentAnimation = idleFrames;
+                }
             }
         }
     }

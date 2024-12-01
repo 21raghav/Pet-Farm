@@ -1,25 +1,26 @@
 package UI;
 
 import Pets.Pet;
-
 import java.awt.*;
 import javax.swing.*;
 
 public class PetShelter {
-    private int dogX; // Dog's X position
-    private int dogY; // Dog's Y position
     private final JPanel backgroundPanel; // Background panel
-    private final statistics stats; // Statistics instance
+    private statistics stats; // Statistics instance
     private int health, happiness, sleep, hunger;
+    GameMenu gameMenu;
 
-    public PetShelter(Pet animal, int health, int happiness, int sleep, int hunger) {
+    public PetShelter(Pet animal, statistics stats) {
         JFrame frame = new JFrame("Pet Shelter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.gameMenu = gameMenu;
 
         // Initialize statistics with example values
         Image statBarImage = new ImageIcon("Assets/Images/statbar.png").getImage(); // Load your stat bar image
         Image healthIcon = new ImageIcon("Assets/Images/healthicon.png").getImage(); // Load your health icon image
-        stats = new statistics(health,happiness,hunger,sleep,statBarImage, healthIcon); // Example values
+        //stats = new statistics(health,happiness,hunger,sleep,statBarImage, healthIcon, gameMenu); // Example values
+        this.stats = stats;
 
         backgroundPanel = new JPanel() {
             private final Image backgroundImage = new ImageIcon("Assets/GameImages/Petshelter.png").getImage();
@@ -39,6 +40,7 @@ public class PetShelter {
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> {
             frame.dispose();
+            new GameMenu(animal);
         });
         exitButton.setOpaque(true);
         exitButton.setContentAreaFilled(true);
@@ -51,6 +53,9 @@ public class PetShelter {
         backgroundPanel.add(exitButton);
 
         JPanel character = animal.getAnimationPanel();
+        animal.sleep();
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        backgroundPanel.addKeyListener(new KeyboardListener(animal));
         backgroundPanel.add(character);
 
         backgroundPanel.setFocusable(true);
@@ -59,7 +64,6 @@ public class PetShelter {
         
         frame.getContentPane().add(backgroundPanel);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(false);
         frame.setVisible(true);
     }
 }

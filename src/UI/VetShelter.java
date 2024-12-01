@@ -1,29 +1,28 @@
 package UI;
 
 import Pets.Pet;
-
 import java.awt.*;
 import javax.swing.*;
 
 public class VetShelter {
-    private int dogX;
-    private int dogY;
     private final JPanel backgroundPanel; // Background panel
     private final statistics stats; // Statistics instance
     private int health;
     private int happiness;
     private int sleep;
     private int hunger;
-
-    public VetShelter(Pet animal, int health, int happiness, int sleep, int hunger) {
+    GameMenu gameMenu;
+    public VetShelter(Pet animal, statistics stats) {
 
         JFrame frame = new JFrame("Vet Shelter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.gameMenu = gameMenu;
+        this.stats = stats;
 
          // Initialize statistics with example values
          Image statBarImage = new ImageIcon("Assets/Images/statbar.png").getImage(); // Load your stat bar image
          Image healthIcon = new ImageIcon("Assets/Images/healthicon.png").getImage(); // Load your health icon image
-         stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon); // Example values
+         //stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, gameMenu); // Example values
 
         backgroundPanel = new JPanel() {
             private final Image backgroundImage = new ImageIcon("Assets/GameImages/vetshelter.png").getImage();
@@ -43,6 +42,7 @@ public class VetShelter {
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> {
             frame.dispose();
+            new GameMenu(animal);
         });
 
         // Set the button transparent and no border
@@ -57,11 +57,17 @@ public class VetShelter {
         backgroundPanel.add(exitButton);
 
         JPanel character = animal.getAnimationPanel();
+        animal.sleep();
+        character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
+        backgroundPanel.addKeyListener(new KeyboardListener(animal));
         backgroundPanel.add(character);
+
+        backgroundPanel.setFocusable(true);
+        backgroundPanel.requestFocusInWindow();
+        frame.setVisible(true);
 
         frame.getContentPane().add(backgroundPanel);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setUndecorated(false);
         frame.setVisible(true);
     }
 }

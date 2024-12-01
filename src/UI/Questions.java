@@ -120,8 +120,11 @@ public class Questions extends JFrame {
             String[] correctAnswers = answersMap.get(currentQuestion);
             if (correctAnswers != null && selectedAnswer.equals(correctAnswers[selectedIndex])) {
                 JOptionPane.showMessageDialog(Questions.this, "Correct!");
+                
+
             } else {
                 JOptionPane.showMessageDialog(Questions.this, "Incorrect!");
+
             }
             dispose();
         }
