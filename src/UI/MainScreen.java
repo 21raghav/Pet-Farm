@@ -4,21 +4,30 @@ import Animation.CatAnimation;
 import Animation.DogAnimation;
 import Animation.FoxAnimation;
 import Animation.RatAnimation;
+import Game.DataManager;
 import Pets.*;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+import javax.swing.*;
 
 public class MainScreen extends JFrame {
     private JLabel imageLabel;
     private Image originalImage;
     private JLabel animalLabel; // Label for the animal image
+    private boolean isLoadGame = false;
 
     public MainScreen() {
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
+        //setResizable(true); // Allow resizing which enables the maximize button
+        setUndecorated(false);  // Remove window borders and bars
+
         // Load the initial image
         ImageIcon mainMenuImage = new ImageIcon("Assets/GameImages/MainMenu.png");
         originalImage = mainMenuImage.getImage();
@@ -77,6 +86,7 @@ public class MainScreen extends JFrame {
                 // Add sound effect path
                 String clickSoundPath = "Assets/Sounds/click.wav";
 
+
                 // Detect button clicks and play sound
                 if (isWithinBounds(x, y, (int) (835 * xScale), (int) (620 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
                     ButtonUtils.playSound(clickSoundPath); // Play sound on "Game" button click
@@ -84,38 +94,55 @@ public class MainScreen extends JFrame {
                 }
                 else if (isWithinBounds(x, y, (int) (700 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
                     ButtonUtils.playSound(clickSoundPath);
-                    new LoadGame();
-                    dispose();
+                    changeImage("Assets/GameImages/PetSelection.png", "Pet Selection");
+                    isLoadGame = true;
                 }
                 else if (isWithinBounds(x, y, (int) (250 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (200 * yScale))) {
                     ButtonUtils.playSound(clickSoundPath);
                     changeImage("Assets/GameImages/PetSelection.png", "Pet Selection");
+
                 }
                 if (isWithinBounds(x, y, (int) (600 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
                     // Top right animal in Pet Selection screen
+                    if (!isLoadGame) {
+                        DataManager.resetState("slot3.csv");
+                    }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Fox(new FoxAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+//                    dispose(); // Close the pet selection window
                 }
                 else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
                     // Top left animal in Pet Selection screen
+                    if (!isLoadGame) {
+                        DataManager.resetState("slot1.csv");
+                    }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Dog(new DogAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+//                    dispose(); // Close the pet selection window
                 }
 
                 else if (isWithinBounds(x, y, (int) (600 * xScale), (int) (600 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
                     // Bottom left animal in Pet Selection screen
+                    if (!isLoadGame) {
+                        DataManager.resetState("slot2.csv");
+                    }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Cat(new CatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+//                    dispose(); // Close the pet selection window
                 }
 
                 else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (600 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
                     // Bottom right animal in Pet Selection screen
+                    if (!isLoadGame) {
+                        DataManager.resetState("slot4.csv");
+                    }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Rat(new RatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+                    //dispose(); // Close the pet selection window
                 }
                 else if (isWithinBounds(x, y, (int) (1400 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (200 * yScale))) {
                     ButtonUtils.playSound(clickSoundPath); // Play sound on "Go Back" button click in Load Game Menu
@@ -202,9 +229,5 @@ public class MainScreen extends JFrame {
 
     private boolean isWithinBounds(int x, int y, int rectX, int rectY, int rectWidth, int rectHeight) {
         return x >= rectX && x <= rectX + rectWidth && y >= rectY && y <= rectY + rectHeight;
-    }
-
-    public static void main(String[] args) {
-        new MainScreen();
     }
 }

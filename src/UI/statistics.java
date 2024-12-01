@@ -1,6 +1,9 @@
 package UI;
 
+import Game.DataManager;
+
 import java.awt.*;
+import java.util.Map;
 
 public class statistics {
     private int health;
@@ -13,12 +16,16 @@ public class statistics {
     private final Image happyIcon;
     private final Image sleepIcon;
     private final GameMenu gameMenu;
+    private Map<String, String> data;
+    private String saveFileName;
 
-    public statistics(int health, int happiness, int hunger, int sleep, Image statBarImage, Image healthIcon, Image happyIcon, Image foodIcon, Image sleepIcon, GameMenu gameMenu) {
-        this.health = health;
-        this.happiness = happiness;
-        this.hunger = hunger;
-        this.sleep = sleep;
+    public statistics(String saveFileName, Map<String, String> data, Image statBarImage, Image healthIcon, Image happyIcon, Image foodIcon, Image sleepIcon, GameMenu gameMenu) {
+        this.data = data;
+        this.saveFileName = saveFileName;
+        this.health = Integer.parseInt(data.get("health"));
+        this.happiness = Integer.parseInt(data.get("happiness"));
+        this.hunger = Integer.parseInt(data.get("hunger"));
+        this.sleep = Integer.parseInt(data.get("sleep"));
         this.statBarImage = statBarImage;
         this.healthIcon = healthIcon;
         this.foodIcon = foodIcon;
@@ -28,26 +35,32 @@ public class statistics {
     }
 
     public void updateState(int statIndex, int increment) {
+        this.data = DataManager.loadState("", saveFileName);
         switch (statIndex) {
             case 0: // Health
                 setHealth(Math.min(100, Math.max(0, health + increment)));
+                this.data.put("health", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("health")) + increment))));
                 gameMenu.repaint();
                 break;
             case 1: // Happiness
                 setHappiness(Math.min(100, Math.max(0, happiness + increment)));
+                this.data.put("happiness", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("happiness")) + increment))));
                 gameMenu.repaint();
                 break;
             case 2: // Hunger
                 setHunger(Math.min(100, Math.max(0, hunger + increment)));
+                this.data.put("hunger", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("hunger")) + increment))));
                 gameMenu.repaint();
                 break;
             case 3: // Sleep
                 setSleep(Math.min(100, Math.max(0, sleep + increment)));
+                this.data.put("hunger", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("hunger")) + increment))));
                 gameMenu.repaint();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid stat index: " + statIndex);
-        }  
+        }
+        DataManager.saveState(this.saveFileName, this.data);
     }
 
     public void drawStats(Graphics g, int width, int height) {

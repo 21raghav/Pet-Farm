@@ -1,7 +1,6 @@
 package UI;
 
 import Game.DataManager;
-
 import java.awt.*;
 import java.util.Map;
 import javax.swing.*;
@@ -9,24 +8,26 @@ import javax.swing.*;
 public class Inventory{
     private JDialog inventoryDialog;
     private final int[] itemCounts = {0,0,0,0,0,0}; // Example counts for each item
-    private Map<String, String> data;
+    private final Map<String, String> data;
     private final Image inventoryImage;
     private final JButton inventoryButton;
     private final GameMenu gameMenu;
     private final statistics gameStats; // Reference to the statistics instance
+    private String saveFileName;
 
     // Update the statIndices array to reflect the new mapping
-    private final int[] statIndices = {0, 0, 0, 0, 1, 1}; // 0-3 increase hunger, 4-5 increase happiness
+    private final int[] statIndices = {2, 2, 2, 2, 1, 1}; // 0-3 increase hunger, 4-5 increase happiness
 
-    public Inventory(GameMenu gameMenu, statistics gameStats, Image inventoryImage, JButton inventoryButton) {
+    public Inventory(String saveFileName, GameMenu gameMenu, statistics gameStats, Image inventoryImage, JButton inventoryButton, Map<String, String> data) {
         this.gameMenu = gameMenu;
         this.gameStats = gameStats; // Initialize the statistics reference
         this.inventoryImage = inventoryImage;
         this.inventoryButton = inventoryButton;
+        this.saveFileName = saveFileName;
         setupInventoryDialog();
 
         // Interact with csv
-        this.data = DataManager.loadState("pet", "inventory.csv");
+        this.data = data;
         itemCounts[0] = Integer.parseInt(data.get("apple"));
         itemCounts[1] = Integer.parseInt(data.get("orange"));
         itemCounts[2] = Integer.parseInt(data.get("strawberry"));
@@ -104,7 +105,7 @@ public class Inventory{
                             break;
                     }
 
-                    DataManager.saveState("inventory.csv", this.data);
+                    DataManager.saveState(this.saveFileName, this.data);
 
                     increaseStat(statIndices[index], 10); // Call to increaseStat
                 } else {
@@ -128,11 +129,34 @@ public class Inventory{
         }
     }
 
-//    public void updateItemCount(int index, int count) {
-//        if (index >= 0 && index < itemCounts.length) {
-//            itemCounts[index] = count;
-//            inventoryDialog.repaint(); // Refresh the dialog to show updated counts
-//        }
-//    }
+    public void updateItemCount(int index, int count) {
+        if (index >= 0 && index < itemCounts.length) {
+            itemCounts[index] += count;
+            inventoryDialog.repaint(); // Refresh the dialog to show updated counts
+            switch(index) {
+                case 0:
+                    data.put("apple", String.valueOf(Integer.parseInt(data.get("apple")) + 1));
+                    break;
+                case 1:
+                    data.put("orange", String.valueOf(Integer.parseInt(data.get("orange")) + 1));
+                    break;
+                case 2:
+                    data.put("strawberry", String.valueOf(Integer.parseInt(data.get("strawberry")) + 1));
+                    break;
+                case 3:
+                    data.put("banana", String.valueOf(Integer.parseInt(data.get("banana")) + 1));
+                    break;
+                case 4:
+                    data.put("ybone", String.valueOf(Integer.parseInt(data.get("ybone")) + 1));
+                    break;
+                case 5:
+                    data.put("bbone", String.valueOf(Integer.parseInt(data.get("bbone")) + 1));
+                    break;
+
+            }
+
+            DataManager.saveState(saveFileName, data); // Save the updated state
+        }
+    }    
 }
 

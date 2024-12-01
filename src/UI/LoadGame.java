@@ -1,21 +1,21 @@
 package UI;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import Animation.CatAnimation;
+import Animation.DogAnimation;
+import Animation.FoxAnimation;
+import Animation.RatAnimation;
+import Game.DataManager;
+import Pets.Cat;
+import Pets.Dog;
+import Pets.Fox;
+import Pets.Pet;
+import Pets.Rat;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import Game.DataManager;
-import Pets.Fox;
-import Pets.Dog;
-import Pets.Cat;
-import Pets.Rat;
-import Pets.Pet;
-import Animation.CatAnimation;
-import Animation.FoxAnimation;
-import Animation.DogAnimation;
-import Animation.RatAnimation;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class LoadGame extends JFrame {
     private static final int MAX_SAVES = 4;
@@ -113,6 +113,8 @@ public class LoadGame extends JFrame {
             // Launch GameMenu with the loaded pet
             new GameMenu(loadedPet);
             dispose();
+            // Launch GameMenu with the loaded pet
+            //SwingUtilities.invokeLater(() -> new GameMenu(loadedPet).setVisible(true));
         } else {
             JOptionPane.showMessageDialog(this, "Failed to load save file.", "Error", JOptionPane.ERROR_MESSAGE);
         }

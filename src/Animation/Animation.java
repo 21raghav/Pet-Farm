@@ -16,6 +16,8 @@ public abstract class Animation extends JPanel{
     protected BufferedImage[] deathFrames;
     protected BufferedImage[] hurtFrames;
     protected BufferedImage[] walkFrames;
+    private boolean[] framesDone = new boolean[4];
+
     protected boolean flipHorizontally = false;
     private boolean isLocked = false;
 
@@ -92,7 +94,6 @@ public abstract class Animation extends JPanel{
         if (!file.exists()) {
             throw new IOException("File not found: " + path);
         }
-
         BufferedImage spriteSheet = ImageIO.read(file);
         BufferedImage[] frames = new BufferedImage[frameCount];
 
@@ -104,7 +105,7 @@ public abstract class Animation extends JPanel{
 
     public void setAnimation(AnimationState state) {
         if (!isLocked) {
-
+            this.framesDone = new boolean[4];
             if (currentState != state) {
                 currentState = state;
                 currentFrame = 0; // Reset to first frame
@@ -139,18 +140,34 @@ public abstract class Animation extends JPanel{
         int panelWidth = 192;
         int panelHeight = 192;
 
-        if (flipHorizontally) {
-            // Flip the image horizontally by using Graphics2D transformation
-            Graphics2D g2d = (Graphics2D) g;
-            // Apply horizontal flip by scaling with -1 on the X-axis
-            g2d.translate(panelWidth, 0);  // Move the origin to the right side of the image
-            g2d.scale(-1, 1);  // Flip horizontally
-            g2d.drawImage(currentAnimation[currentFrame], -this.x, this.y, panelWidth, panelHeight, this); // Draw the flipped image
-            g2d.dispose();  // Dispose of the Graphics2D object
-        } else {
-            // Draw the current frame of the Dog object, scaled to panel size
-            g.drawImage(currentAnimation[currentFrame], this.x, this.y, panelWidth, panelHeight, this);
+        if (this.currentAnimation == deathFrames) {
+            if (!this.framesDone[currentFrame]) {
+                this.framesDone[currentFrame] = true;
+                g.drawImage(currentAnimation[currentFrame], this.x, this.y, panelWidth, panelHeight, this);
+            } else {
+                g.drawImage(currentAnimation[3], this.x, this.y, panelWidth, panelHeight, this);
+            }
+
         }
+        else {
+            if (flipHorizontally) {
+                // Flip the image horizontally by using Graphics2D transformation
+                Graphics2D g2d = (Graphics2D) g;
+                // Apply horizontal flip by scaling with -1 on the X-axis
+                g2d.translate(panelWidth, 0);  // Move the origin to the right side of the image
+                g2d.scale(-1, 1);  // Flip horizontally
+                // Dispose of the Graphics2D object
+                // Draw the flipped image
+
+                g2d.drawImage(currentAnimation[currentFrame], -this.x, this.y, panelWidth, panelHeight, this); // Draw the flipped image
+                g2d.dispose();  // Dispose of the Graphics2D object
+            } else {
+                // Draw the current frame of the Dog object, scaled to panel size
+                g.drawImage(currentAnimation[currentFrame], this.x, this.y, panelWidth, panelHeight, this);
+            }
+
+        }
+
     }
 
 }
