@@ -9,29 +9,41 @@ public class statistics {
     private int sleep;
     private final Image statBarImage;
     private final Image healthIcon;
+    private final Image foodIcon;
+    private final Image happyIcon;
+    private final Image sleepIcon;
+    private final GameMenu gameMenu;
 
-    public statistics(int health, int happiness, int hunger, int sleep, Image statBarImage, Image healthIcon) {
+    public statistics(int health, int happiness, int hunger, int sleep, Image statBarImage, Image healthIcon, Image happyIcon, Image foodIcon, Image sleepIcon, GameMenu gameMenu) {
         this.health = health;
         this.happiness = happiness;
         this.hunger = hunger;
         this.sleep = sleep;
         this.statBarImage = statBarImage;
         this.healthIcon = healthIcon;
+        this.foodIcon = foodIcon;
+        this.happyIcon = happyIcon;
+        this.sleepIcon = sleepIcon;
+        this.gameMenu = gameMenu;
     }
 
     public void updateState(int statIndex, int increment) {
         switch (statIndex) {
             case 0: // Health
                 setHealth(Math.min(100, Math.max(0, health + increment)));
+                gameMenu.repaint();
                 break;
             case 1: // Happiness
                 setHappiness(Math.min(100, Math.max(0, happiness + increment)));
+                gameMenu.repaint();
                 break;
             case 2: // Hunger
                 setHunger(Math.min(100, Math.max(0, hunger + increment)));
+                gameMenu.repaint();
                 break;
             case 3: // Sleep
                 setSleep(Math.min(100, Math.max(0, sleep + increment)));
+                gameMenu.repaint();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid stat index: " + statIndex);
@@ -49,12 +61,15 @@ public class statistics {
 
         statBarY += statBarHeight + 10;
         drawStatBar(g, statBarX, statBarY, getHappiness(), Color.YELLOW);
+        g.drawImage(happyIcon, statBarX + statBarWidth + 5, statBarY, null);
 
         statBarY += statBarHeight + 10;
         drawStatBar(g, statBarX, statBarY, getHunger(), Color.GREEN);
+        g.drawImage(foodIcon, statBarX + statBarWidth + 5, statBarY, null);
 
         statBarY += statBarHeight + 10;
         drawStatBar(g, statBarX, statBarY, getSleep(), Color.BLUE);
+        g.drawImage(sleepIcon, statBarX + statBarWidth + 5, statBarY, null);
     }
 
     public void setHealth(int health) {

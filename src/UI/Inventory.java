@@ -3,7 +3,7 @@ package UI;
 import java.awt.*;
 import javax.swing.*;
 
-public class Inventory{
+public class Inventory {
     private JDialog inventoryDialog;
     private final int[] itemCounts = {5, 3, 2, 4, 1, 6}; // Example counts for each item
     private final Image inventoryImage;
@@ -69,6 +69,7 @@ public class Inventory{
                 if (itemCounts[index] > 0) {
                     itemCounts[index]--; // Decrement the item count
                     increaseStat(statIndices[index], 10); // Call to increaseStat
+                    //gameMenu.repaint();
                 } else {
                     JOptionPane.showMessageDialog(inventoryDialog, "No more items left!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }

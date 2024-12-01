@@ -1,29 +1,28 @@
 package UI;
 
 import Pets.Pet;
-
 import java.awt.*;
 import javax.swing.*;
 
 public class VetShelter {
-    private int dogX;
-    private int dogY;
     private final JPanel backgroundPanel; // Background panel
     private final statistics stats; // Statistics instance
     private int health;
     private int happiness;
     private int sleep;
     private int hunger;
-
-    public VetShelter(Pet animal, int health, int happiness, int sleep, int hunger) {
+    GameMenu gameMenu;
+    public VetShelter(Pet animal, statistics stats) {
 
         JFrame frame = new JFrame("Vet Shelter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.gameMenu = gameMenu;
+        this.stats = stats;
 
          // Initialize statistics with example values
          Image statBarImage = new ImageIcon("Assets/Images/statbar.png").getImage(); // Load your stat bar image
          Image healthIcon = new ImageIcon("Assets/Images/healthicon.png").getImage(); // Load your health icon image
-         stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon); // Example values
+         //stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, gameMenu); // Example values
 
         backgroundPanel = new JPanel() {
             private final Image backgroundImage = new ImageIcon("Assets/GameImages/vetshelter.png").getImage();
