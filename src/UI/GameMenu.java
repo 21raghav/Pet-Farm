@@ -1,10 +1,7 @@
 package UI;
 
-import Pets.Pet;
 import Game.DataManager;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import Pets.Pet;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -18,6 +15,9 @@ public class GameMenu extends JFrame {
     private Image backgroundImage;
     private Image statBarImage; // New variable for the stat bar image
     private Image healthIcon; // New variable for the health icon
+    private Image happyIcon;
+    private Image foodIcon;
+    private Image sleepIcon;
     private Image inventoryIcon; // New variable for the inventory icon
     private Image inventoryImage; // New variable for inventory image
     private int dogX, dogY;  // Dog's position
@@ -47,9 +47,12 @@ public class GameMenu extends JFrame {
             backgroundImage = ImageIO.read(new File("Assets/GameImages/GameMenu.png"));
             statBarImage = ImageIO.read(new File("Assets/Images/statbar.png")); // Load the stat bar image
             healthIcon = ImageIO.read(new File("Assets/Images/healthicon.png")); // Load the health icon image
+            happyIcon = ImageIO.read(new File("Assets/Images/happyicon.png")); // Load the health icon image
+            foodIcon = ImageIO.read(new File("Assets/Images/foodicon.png")); // Load the health icon image
+            sleepIcon = ImageIO.read(new File("Assets/Images/sleepicon.png")); // Load the health icon image
             inventoryIcon = ImageIO.read(new File("Assets/Images/InventoryIcon.png")); // Load the inventory icon image
             inventoryImage = ImageIO.read(new File("Assets/Images/Inventory.png")); // Load the inventory image
-            stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon); // Initialize statistics
+            stats = new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this); // Initialize statistics
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,7 +116,7 @@ public class GameMenu extends JFrame {
         });
         mainPanel.add(saveButton);
 
-
+        //pet spawn
         JPanel character = petToSpawn.getAnimationPanel();
         petToSpawn.unlock();
         petToSpawn.stopWalking();
@@ -135,11 +138,13 @@ public class GameMenu extends JFrame {
 
         // Initialize the Inventory with the statistics instance
         inventory = new Inventory(this, stats, inventoryImage, inventoryButton);
+        mainPanel.repaint();
         inventoryButton.addActionListener(e -> {
-            //mainPanel.repaint(); // Ensure the panel is repainted to show updated stats
             inventory.toggleInventoryDisplay();
             mainPanel.requestFocusInWindow();  // regain focus after interaction
         });
+
+        mainPanel.repaint();
 
         // Initialize the sleep button
         sleepButton = new JButton("Sleep");
@@ -153,7 +158,7 @@ public class GameMenu extends JFrame {
         sleepButton.addActionListener(e -> {
             try {
                 this.dispose();
-                new PetShelter(this.petToSpawn, health, happiness, sleep, hunger);
+                new PetShelter(this.petToSpawn, new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
         }
             catch(Exception error) { error.printStackTrace();}
 //            mainPanel.requestFocusInWindow();  // regain focus after interaction
@@ -167,7 +172,7 @@ public class GameMenu extends JFrame {
         vetButton.addActionListener(e -> {
             try {
                 this.dispose();
-                new VetShelter(this.petToSpawn, health, happiness, sleep, hunger);
+                new VetShelter(this.petToSpawn, new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
             } catch(Exception error) { error.printStackTrace();}
 //            mainPanel.repaint();
         });
@@ -219,16 +224,12 @@ public class GameMenu extends JFrame {
 
         setVisible(true);
     }
-//    public void repaintMainPanel() {
-//        mainPanel.repaint(); // Repaint the main panel
-//    }
 
     private void updateInventoryButtonPosition(JButton inventoryButton) {
         int buttonX = getWidth() - inventoryIcon.getWidth(null) - 20;
         int buttonY = 300;
         inventoryButton.setBounds(buttonX, buttonY, inventoryIcon.getWidth(null), inventoryIcon.getHeight(null));
     }
-
 
     private void saveGame() {
         DataManager.saveState(petToSpawn.getClass().getSimpleName().toLowerCase(), petToSpawn.getAttributes());
