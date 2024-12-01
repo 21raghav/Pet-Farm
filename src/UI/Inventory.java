@@ -118,7 +118,7 @@ public class Inventory{
     // Method to increase the stat based on the index
     private void increaseStat(int statIndex, int increment) {
         // Call the updateStat method on the statistics instance
-        gameStats.updateStat(statIndex, increment);
+        gameStats.updateState(statIndex, increment);
     }
 
     public void toggleInventoryDisplay() {
