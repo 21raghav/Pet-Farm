@@ -2,55 +2,48 @@ package UI;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import Pets.Pet;
 
 /**
- * The KeyboardListener class listens for keyboard input and performs actions
- * based on specific key presses. It implements the {@link KeyListener} interface
- * and is designed to handle directional inputs (`W`, `A`, `S`, `D`).
+ * The KeyboardListener class listens for keyboard input and controls the provided Animal.
  */
 public class KeyboardListener implements KeyListener {
+    private Pet pet;
 
-    /**
-     * Invoked when a key is typed (pressed and released).
-     *
-     * @param e The {@link KeyEvent} associated with the key typed.
-     */
+    public KeyboardListener(Pet pet) {
+        this.pet = pet;
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
         // Currently, no actions are performed on keyTyped.
     }
 
-    /**
-     * Invoked when a key is pressed. This method listens for directional keys
-     * (`W`, `A`, `S`, `D`) and prints a message when one of these keys is pressed.
-     *
-     * @param e The {@link KeyEvent} associated with the key press.
-     */
     @Override
     public void keyPressed(KeyEvent e) {
+        int moveAmount = 5; // Adjust movement speed as needed
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
-                System.out.println("W pressed");
+                pet.move(0, -moveAmount); // Move up
+                pet.walk();
                 break;
             case KeyEvent.VK_A:
-                System.out.println("A pressed");
+                pet.move(-moveAmount, 0); // Move left
+                pet.walk();
                 break;
             case KeyEvent.VK_S:
-                System.out.println("S pressed");
+                pet.move(0, moveAmount); // Move down
+                pet.walk();
                 break;
             case KeyEvent.VK_D:
-                System.out.println("D pressed");
+                pet.move(moveAmount, 0); // Move right
+                pet.walk();
                 break;
         }
     }
 
-    /**
-     * Invoked when a key is released.
-     *
-     * @param e The {@link KeyEvent} associated with the key release.
-     */
     @Override
     public void keyReleased(KeyEvent e) {
-        // Currently, no actions are performed on keyReleased.
+        pet.stopWalking();
     }
 }
