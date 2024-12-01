@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -31,18 +33,15 @@ public class GameMenu extends JFrame {
     private final JButton vetButton; // New variable for the vet button
     private final JButton question1Button; // New variable for Question 1 button
     private final JButton question2Button; // New variable for Question 2 button
-    @SuppressWarnings("unused")
-    private JPanel mainPanel;
     private Pet petToSpawn;
 
     public GameMenu(Pet petToSpawn) {
         this.petToSpawn = petToSpawn; // Save the pet instance for save functionality
 
         setTitle("Game Menu");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);  // Set the frame to full screen
 
-        mainPanel = new JPanel();
 
         // Load the background image
         try {
@@ -68,7 +67,7 @@ public class GameMenu extends JFrame {
                 super.paintComponent(g);
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the background image
                 stats.drawStats(g, getWidth(), getHeight()); // Draw the statistics
-            }
+                }
         };
 
         mainPanel.setLayout(null);
@@ -84,10 +83,14 @@ public class GameMenu extends JFrame {
 
         //pet spawn
         JPanel character = petToSpawn.getAnimationPanel();
+        petToSpawn.unlock();
+        petToSpawn.stopWalking();
+
         character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
         mainPanel.add(character);
 
         add(mainPanel);
+
         mainPanel.setFocusable(true);
 
         // Setup inventory button and inventory class
@@ -112,21 +115,31 @@ public class GameMenu extends JFrame {
         sleepButton = new JButton("Sleep");
         sleepButton.setVisible(true); // Initially hidden
         mainPanel.add(sleepButton);
+
         // Set the position and size of the sleep button
         sleepButton.setBounds(550, 350, 100, 30); // Example position and size
+
         // Action listener for the sleep button
         sleepButton.addActionListener(e -> {
-            new PetShelter(this.petToSpawn, stats);
-            mainPanel.requestFocusInWindow();  // regain focus after interaction
+            try {
+                this.dispose();
+                new PetShelter(this.petToSpawn, new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+        }
+            catch(Exception error) { error.printStackTrace();}
+//            mainPanel.requestFocusInWindow();  // regain focus after interaction
         });
 
         vetButton = new JButton("Vet");
         vetButton.setVisible(true);
         mainPanel.add(vetButton);
         vetButton.setBounds(200, 350, 100, 30);
+
         vetButton.addActionListener(e -> {
-            new VetShelter(this.petToSpawn, stats);
-            mainPanel.requestFocusInWindow();
+            try {
+                this.dispose();
+                new VetShelter(this.petToSpawn, new statistics(health, happiness, hunger, sleep, statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+            } catch(Exception error) { error.printStackTrace();}
+//            mainPanel.repaint();
         });
 
         // Initialize the Question 1 button
@@ -140,7 +153,7 @@ public class GameMenu extends JFrame {
             question1Button.setEnabled(false);  // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory); // Open the Questions window
             mainPanel.requestFocusInWindow();  // regain focus after interaction
-            
+
             // Add a WindowListener to the questionsWindow to detect when it is closed
             questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
                 @Override
@@ -161,7 +174,7 @@ public class GameMenu extends JFrame {
             question2Button.setEnabled(false);  // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory); // Open the Questions window
             mainPanel.requestFocusInWindow();  // regain focus after interaction
-            
+
             // Add a WindowListener to the questionsWindow to detect when it is closed
             questionsWindow.addWindowListener(new WindowAdapter() {
                 @Override
@@ -170,8 +183,6 @@ public class GameMenu extends JFrame {
                 }
             });
         });
-        
-        
 
         // Component listeners for resizing and button updates
         addComponentListener(new java.awt.event.ComponentAdapter() {

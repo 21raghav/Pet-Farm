@@ -82,7 +82,7 @@ public class LoadGame extends JFrame {
     }
 
     private void loadSaveFile(String saveFileName) {
-        Map<String, String> attributes = DataManager.loadState(saveFileName);
+        Map<String, String> attributes = DataManager.loadState("", saveFileName);
 
         if (!attributes.isEmpty()) {
             Pet loadedPet;

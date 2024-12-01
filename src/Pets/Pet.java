@@ -146,7 +146,10 @@ public abstract class Pet {
         animationPanel.setAnimation(AnimationState.WALK);
     }
 
+    public void unlock() { animationPanel.unlock(); }
+
     public void stopWalking() {
+
         animationPanel.setAnimation(AnimationState.IDLE);
     }
 
@@ -162,8 +165,9 @@ public abstract class Pet {
         animationPanel.setAnimation(AnimationState.HURT);
     }
 
-    public void die() {
+    public void sleep() {
         animationPanel.setAnimation(AnimationState.DEATH);
+        animationPanel.lock();
     }
 
     public void move(int dx, int dy) {

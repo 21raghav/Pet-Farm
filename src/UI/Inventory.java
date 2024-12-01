@@ -1,12 +1,15 @@
 package UI;
 
+import Game.DataManager;
+
 import java.awt.*;
-import java.util.Random;
+import java.util.Map;
 import javax.swing.*;
 
-public class Inventory {
+public class Inventory{
     private JDialog inventoryDialog;
-    private int[] itemCounts = {5, 3, 2, 4, 1, 6}; // Example counts for each item
+    private final int[] itemCounts = {0,0,0,0,0,0}; // Example counts for each item
+    private Map<String, String> data;
     private final Image inventoryImage;
     private final JButton inventoryButton;
     private final GameMenu gameMenu;
@@ -21,6 +24,16 @@ public class Inventory {
         this.inventoryImage = inventoryImage;
         this.inventoryButton = inventoryButton;
         setupInventoryDialog();
+
+        // Interact with csv
+        this.data = DataManager.loadState("pet", "inventory.csv");
+        itemCounts[0] = Integer.parseInt(data.get("apple"));
+        itemCounts[1] = Integer.parseInt(data.get("orange"));
+        itemCounts[2] = Integer.parseInt(data.get("strawberry"));
+        itemCounts[3] = Integer.parseInt(data.get("banana"));
+        itemCounts[4] = Integer.parseInt(data.get("ybone"));
+        itemCounts[5] = Integer.parseInt(data.get("bbone"));
+
     }
 
     private void setupInventoryDialog() {
@@ -69,8 +82,31 @@ public class Inventory {
             button.addActionListener(e -> {
                 if (itemCounts[index] > 0) {
                     itemCounts[index]--; // Decrement the item count
+
+                    switch(index) {
+                        case 0:
+                            data.put("apple", String.valueOf(Integer.parseInt(data.get("apple")) - 1));
+                            break;
+                        case 1:
+                            data.put("orange", String.valueOf(Integer.parseInt(data.get("orange")) - 1));
+                            break;
+                        case 2:
+                            data.put("strawberry", String.valueOf(Integer.parseInt(data.get("strawberry")) - 1));
+                            break;
+                        case 3:
+                            data.put("banana", String.valueOf(Integer.parseInt(data.get("banana")) - 1));
+                            break;
+                        case 4:
+                            data.put("ybone", String.valueOf(Integer.parseInt(data.get("ybone")) - 1));
+                            break;
+                        case 5:
+                            data.put("bbone", String.valueOf(Integer.parseInt(data.get("bbone")) - 1));
+                            break;
+                    }
+
+                    DataManager.saveState("inventory.csv", this.data);
+
                     increaseStat(statIndices[index], 10); // Call to increaseStat
-                    //gameMenu.repaint();
                 } else {
                     JOptionPane.showMessageDialog(inventoryDialog, "No more items left!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -92,22 +128,11 @@ public class Inventory {
         }
     }
 
-    public void updateItemCount(int index, int count) {
-        if (index >= 0 && index < itemCounts.length) {
-            itemCounts[index] = count;
-            inventoryDialog.repaint(); // Refresh the dialog to show updated counts
-        }
-    }
-
-    public void incrementItemCount(int index, int increment){
-        itemCounts[index] += increment;
-    }
-
-    public void increaseRandomInventoryItem() {
-        System.out.println("reading inv");
-        Random rand = new Random();
-        int randomIndex = rand.nextInt(6);  // Generate a random number between 0 and 5
-        updateItemCount(randomIndex, 1); // Increment the count of the item at the random index by 1
-    }
+//    public void updateItemCount(int index, int count) {
+//        if (index >= 0 && index < itemCounts.length) {
+//            itemCounts[index] = count;
+//            inventoryDialog.repaint(); // Refresh the dialog to show updated counts
+//        }
+//    }
 }
 
