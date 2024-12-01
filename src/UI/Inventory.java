@@ -106,8 +106,8 @@ public class Inventory{
                     }
 
                     DataManager.saveState(this.saveFileName, this.data);
-
-                    //increaseStat(statIndices[index], 10); // Call to increaseStat
+                    increaseStat(statIndices[index], 10); // Call to increaseStat
+                    
                 } else {
                     JOptionPane.showMessageDialog(inventoryDialog, "No more items left!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }

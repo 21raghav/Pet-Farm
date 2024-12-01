@@ -5,6 +5,8 @@ import Game.DataManager;
 import Pets.*;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -108,8 +110,39 @@ public class GameMenu extends JFrame {
 
         //pet spawn
         JPanel character = petToSpawn.getAnimationPanel();
-        petToSpawn.unlock();
-        petToSpawn.stopWalking();
+        if(stats.getHealth() == 0){
+            petToSpawn.sleep();
+            SwingUtilities.invokeLater(() -> {
+                // Create a non-modal dialog to show the message
+                final JDialog dialog = new JDialog();
+                dialog.setTitle("Alert");
+                dialog.setModal(false); // Make it non-modal
+                dialog.setSize(600, 100);
+                dialog.setLayout(new FlowLayout());
+            
+                // Create the label with a custom font
+                JLabel messageLabel = new JLabel("Your pet has died! Health is empty...");
+                messageLabel.setFont(new Font("Serif", Font.BOLD, 24)); // Set the font size to 24 and make it bold
+                dialog.add(messageLabel);
+            
+                dialog.setLocationRelativeTo(null); // Center on screen
+            
+                // Set a timer to close the dialog automatically after 6 seconds
+                new Timer(6000, new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose();
+                    }
+                }).start();
+            
+                dialog.setVisible(true);
+            });
+            
+        }
+        else{
+            petToSpawn.unlock();
+            petToSpawn.stopWalking();
+        }
+        
 
         character.setBounds(0, -200, character.getPreferredSize().width, character.getPreferredSize().height);
         mainPanel.repaint();
@@ -193,16 +226,26 @@ public class GameMenu extends JFrame {
         question1Button.addActionListener(e -> {
             question1Button.setEnabled(false);  // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory, stats, 1); // Open the Questions window !! TYPE 1 = GAMEMENU
-            mainPanel.requestFocusInWindow();  // regain focus after interaction
+            mainPanel.requestFocusInWindow();  // Regain focus after interaction
+
+            // Timer to re-enable the button after 30 seconds (30000 milliseconds)
+            Timer enableButtonTimer = new Timer(30000, event -> {
+                question1Button.setEnabled(true);  // Re-enable the button after 30 seconds
+            });
+            enableButtonTimer.setRepeats(false);  // Ensure the timer only runs once
+            enableButtonTimer.start();  // Start the timer
 
             // Add a WindowListener to the questionsWindow to detect when it is closed
-            questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
+            questionsWindow.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    question1Button.setEnabled(true);  // Re-enable the button once the window is closed
+                    // Do not re-enable the button here to ensure 30 seconds must pass
+                    enableButtonTimer.stop();  // Stop the timer if the window closes early
                 }
             });
         });
+
+        
 
         // Initialize the Question 2 button
         ImageIcon questionIcon2 = new ImageIcon(questionImage);
@@ -216,17 +259,25 @@ public class GameMenu extends JFrame {
         mainPanel.add(question2Button);
         // Set the position of the Question 2 button (right side)
 
-        // Action listener for Question 2 button
+        // Action listener for Question 1 button
         question2Button.addActionListener(e -> {
             question2Button.setEnabled(false);  // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory, stats, 1); // Open the Questions window !! TYPE 1 = GAMEMENU
-            mainPanel.requestFocusInWindow();  // regain focus after interaction
+            mainPanel.requestFocusInWindow();  // Regain focus after interaction
+
+            // Timer to re-enable the button after 30 seconds (30000 milliseconds)
+            Timer enableButtonTimer = new Timer(30000, event -> {
+                question2Button.setEnabled(true);  // Re-enable the button after 30 seconds
+            });
+            enableButtonTimer.setRepeats(false);  // Ensure the timer only runs once
+            enableButtonTimer.start();  // Start the timer
 
             // Add a WindowListener to the questionsWindow to detect when it is closed
             questionsWindow.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    question2Button.setEnabled(true);  // Corrected to re-enable question2Button
+                    // Do not re-enable the button here to ensure 30 seconds must pass
+                    enableButtonTimer.stop();  // Stop the timer if the window closes early
                 }
             });
         });

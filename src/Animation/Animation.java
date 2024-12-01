@@ -1,7 +1,5 @@
 package Animation;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,6 +7,8 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public abstract class Animation extends JPanel{
     protected BufferedImage[] idleFrames;
@@ -33,8 +33,8 @@ public abstract class Animation extends JPanel{
         this.isLocked = false;
     }
 
-    private int x = 340; // x-coordinate of the Dog
-    private int y = 150; // y-coordinate of the Dog
+    private int x = 380; // x-coordinate of the Dog
+    private int y = 240; // y-coordinate of the Dog
 
     @Override
     public int getX() {

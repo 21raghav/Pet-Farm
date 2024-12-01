@@ -100,14 +100,14 @@ public class MainScreen extends JFrame {
                     // Top right animal in Pet Selection screen
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Fox(new FoxAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
-                    SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+                    new GameMenu(selectedPet);
                     //dispose(); // Close the pet selection window
                 }
                 else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
                     // Top left animal in Pet Selection screen
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Dog(new DogAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
-                    SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+                    new GameMenu(selectedPet);
                     //dispose(); // Close the pet selection window
                 }
 
@@ -115,7 +115,7 @@ public class MainScreen extends JFrame {
                     // Bottom left animal in Pet Selection screen
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Cat(new CatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
-                    SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+                    new GameMenu(selectedPet);
                     //dispose(); // Close the pet selection window
                 }
 
@@ -123,7 +123,7 @@ public class MainScreen extends JFrame {
                     // Bottom right animal in Pet Selection screen
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Rat(new RatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
-                    SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
+                    new GameMenu(selectedPet);
                     //dispose(); // Close the pet selection window
                 }
                 else if (isWithinBounds(x, y, (int) (1400 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (200 * yScale))) {

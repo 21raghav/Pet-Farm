@@ -126,24 +126,24 @@ public class Questions extends JFrame {
                     inventory.updateItemCount(randomIndex, 1);  // Assuming you want to increase the first item in the inventory
                 }
                 if(type == 2){
-                    stats.updateState(3, 20);
+                    stats.updateState(3, 15);
                 }
                 if(type == 3) {
-                    stats.updateState(0, 20);
+                    stats.updateState(0, 15);
                     
                 }
             }
             else {
                 JOptionPane.showMessageDialog(Questions.this, "Incorrect!");
                 if(type == 1){
-                    stats.updateState(1, -5);
-                    stats.updateState(2, -5);
+                    stats.updateState(1, -20);
+                    stats.updateState(2, -20);
                 }
                 if(type == 2){
-                    stats.updateState(3, -5);
+                    stats.updateState(3, -20);
                 }
                 if(type == 3){
-                    stats.updateState(0, -5);
+                    stats.updateState(0, -20);
                 }
             }
             dispose();  // Close the questions window

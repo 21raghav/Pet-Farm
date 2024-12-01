@@ -4,7 +4,6 @@ import Pets.Pet;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import javax.swing.*;
 
 public class VetShelter {
@@ -45,17 +44,25 @@ public class VetShelter {
         backgroundPanel.add(questionButton);
 
         questionButton.addActionListener(e -> {
-        questionButton.setEnabled(false); // Disable the button to prevent re-clicks
-        Questions questionsWindow = new Questions(inventory, stats, 3); // Open the Questions window !! TYPE 3 = VET
+            questionButton.setEnabled(false); // Disable the button to prevent re-clicks
+            Questions questionsWindow = new Questions(inventory, stats, 3); // Open the Questions window !! TYPE 3 = VET
         
-        questionsWindow.addWindowListener((WindowListener) new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                questionButton.setEnabled(true); // Re-enable the button once the window is closed
-                backgroundPanel.repaint();  // Trigger repaint whenever stats are updated
+            // Timer to re-enable the button after 30 seconds (30000 milliseconds)
+            Timer enableButtonTimer = new Timer(30000, event -> {
+                questionButton.setEnabled(true);  // Re-enable the button after 30 seconds
+            });
+            enableButtonTimer.setRepeats(false);  // Ensure the timer only runs once
+            enableButtonTimer.start();  // Start the timer
+        
+            questionsWindow.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    enableButtonTimer.stop();  // Stop the timer if the window closes early
+                    backgroundPanel.repaint();  // Trigger repaint whenever stats are updated
                 }
             });
-        });   
+        });
+          
 
         // Create an exit button
         ImageIcon exit = new ImageIcon("Assets/Images/goBack.png");
