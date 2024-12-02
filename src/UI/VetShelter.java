@@ -46,13 +46,19 @@ public class VetShelter {
         questionButton.addActionListener(e -> {
             questionButton.setEnabled(false); // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory, stats, 3); // Open the Questions window !! TYPE 3 = VET
-
+            backgroundPanel.repaint();
             // Timer to re-enable the button after 15 seconds (15000 milliseconds)
             Timer enableButtonTimer = new Timer(15000, event -> {
                 questionButton.setEnabled(true);  // Re-enable the button after 30 seconds
             });
             enableButtonTimer.setRepeats(false);  // Ensure the timer only runs once
             enableButtonTimer.start();  // Start the timer
+            questionsWindow.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    backgroundPanel.repaint();
+                }
+            });
         });
 
 

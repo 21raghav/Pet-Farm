@@ -93,7 +93,7 @@ public class GameMenu extends JFrame {
             }
         };
 
-        Timer decreaseAll = new Timer(20000, new ActionListener() {
+        Timer decreaseAll = new Timer(60000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 stats.updateState(1,-5);
                 stats.updateState(2,-3);

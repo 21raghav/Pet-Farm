@@ -20,6 +20,10 @@ public class statistics {
     private final Image foodIcon;
     private final Image happyIcon;
     private final Image sleepIcon;
+    private boolean notifiedHealth = false;
+    private boolean notifiedSleep = false;
+    private boolean notifiedHunger = false;
+    private boolean notifiedHappiness = false;
     private final GameMenu gameMenu;
     private Map<String, String> data;
     private String saveFileName;
@@ -46,25 +50,29 @@ public class statistics {
                 this.data.put("health", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("health")) + increment))));
                 gameMenu.repaint();
                 if (getHealth() <= 25) {
-                    SwingUtilities.invokeLater(() -> {
-                        // Create a non-modal dialog to show the message
-                        final JDialog dialog = new JDialog();
-                        dialog.setTitle("Alert");
-                        dialog.setModal(false); // Make it non-modal
-                        dialog.setSize(300, 100);
-                        dialog.setLayout(new FlowLayout());
-                        dialog.add(new JLabel("Your pet is hurt! Health is very low"));
-                        dialog.setLocationRelativeTo(null); // Center on screen
+                    if (!notifiedHealth) {
+                        this.notifiedHealth = true;
+                        SwingUtilities.invokeLater(() -> {
+                            // Create a non-modal dialog to show the message
+                            final JDialog dialog = new JDialog();
+                            dialog.setTitle("Alert");
+                            dialog.setModal(false); // Make it non-modal
+                            dialog.setSize(300, 100);
+                            dialog.setLayout(new FlowLayout());
+                            dialog.add(new JLabel("Your pet is hurt! Health is very low"));
+                            dialog.setLocationRelativeTo(null); // Center on screen
 
-                        // Set a timer to close the dialog automatically after 3 seconds
-                        new Timer(3000, new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-                                dialog.dispose();
-                            }
-                        }).start();
+                            // Set a timer to close the dialog automatically after 3 seconds
+                            new Timer(3000, new ActionListener() {
+                                public void actionPerformed(ActionEvent e) {
+                                    dialog.dispose();
+                                }
+                            }).start();
 
-                        dialog.setVisible(true);
-                    });
+                            dialog.setVisible(true);
+                        });
+
+                    }
                 }
                 break;
             case 1: // Happiness
@@ -72,25 +80,29 @@ public class statistics {
                 this.data.put("happiness", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("happiness")) + increment))));
                 gameMenu.repaint();
                 if (getHappiness() <= 25) {
-                    SwingUtilities.invokeLater(() -> {
-                        // Create a non-modal dialog to show the message
-                        final JDialog dialog = new JDialog();
-                        dialog.setTitle("Alert");
-                        dialog.setModal(false); // Make it non-modal
-                        dialog.setSize(300, 100);
-                        dialog.setLayout(new FlowLayout());
-                        dialog.add(new JLabel("Your pet is not happy! Happiness is very low"));
-                        dialog.setLocationRelativeTo(null); // Center on screen
+                    if (!notifiedHappiness) {
+                        notifiedHappiness = true;
+                        SwingUtilities.invokeLater(() -> {
+                            // Create a non-modal dialog to show the message
+                            final JDialog dialog = new JDialog();
+                            dialog.setTitle("Alert");
+                            dialog.setModal(false); // Make it non-modal
+                            dialog.setSize(300, 100);
+                            dialog.setLayout(new FlowLayout());
+                            dialog.add(new JLabel("Your pet is not happy! Happiness is very low"));
+                            dialog.setLocationRelativeTo(null); // Center on screen
 
-                        // Set a timer to close the dialog automatically after 3 seconds
-                        new Timer(3000, new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-                                dialog.dispose();
-                            }
-                        }).start();
+                            // Set a timer to close the dialog automatically after 3 seconds
+                            new Timer(3000, new ActionListener() {
+                                public void actionPerformed(ActionEvent e) {
+                                    dialog.dispose();
+                                }
+                            }).start();
 
-                        dialog.setVisible(true);
-                    });
+                            dialog.setVisible(true);
+                        });
+
+                    }
                 }
                 break;
             case 2: // Hunger
@@ -101,25 +113,29 @@ public class statistics {
                     updateState(1, -25);
                 }
                 if (getHunger() <= 25) {
-                    SwingUtilities.invokeLater(() -> {
-                        // Create a non-modal dialog to show the message
-                        final JDialog dialog = new JDialog();
-                        dialog.setTitle("Alert");
-                        dialog.setModal(false); // Make it non-modal
-                        dialog.setSize(300, 100);
-                        dialog.setLayout(new FlowLayout());
-                        dialog.add(new JLabel("Your pet is anrgy! Anger is very low"));
-                        dialog.setLocationRelativeTo(null); // Center on screen
+                        if (!notifiedHunger) {
+                            this.notifiedHunger = true;
+                            SwingUtilities.invokeLater(() -> {
+                                // Create a non-modal dialog to show the message
+                                final JDialog dialog = new JDialog();
+                                dialog.setTitle("Alert");
+                                dialog.setModal(false); // Make it non-modal
+                                dialog.setSize(300, 100);
+                                dialog.setLayout(new FlowLayout());
+                                dialog.add(new JLabel("Your pet is hungry! Hunger is very low"));
+                                dialog.setLocationRelativeTo(null); // Center on screen
 
-                        // Set a timer to close the dialog automatically after 3 seconds
-                        new Timer(3000, new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-                                dialog.dispose();
-                            }
-                        }).start();
+                                // Set a timer to close the dialog automatically after 3 seconds
+                                new Timer(3000, new ActionListener() {
+                                    public void actionPerformed(ActionEvent e) {
+                                        dialog.dispose();
+                                    }
+                                }).start();
 
-                        dialog.setVisible(true);
-                    });
+                                dialog.setVisible(true);
+                            });
+                        }
+
                 }
                 break;
             case 3: // Sleep
@@ -130,25 +146,29 @@ public class statistics {
                     updateState(0, -25);
                 }
                 if (getSleep() <= 25) {
-                    SwingUtilities.invokeLater(() -> {
-                        // Create a non-modal dialog to show the message
-                        final JDialog dialog = new JDialog();
-                        dialog.setTitle("Alert");
-                        dialog.setModal(false); // Make it non-modal
-                        dialog.setSize(300, 100);
-                        dialog.setLayout(new FlowLayout());
-                        dialog.add(new JLabel("Your pet is tired! Sleep is very low"));
-                        dialog.setLocationRelativeTo(null); // Center on screen
+                    if (!notifiedSleep) {
+                        this.notifiedSleep = true;
+                        SwingUtilities.invokeLater(() -> {
+                            // Create a non-modal dialog to show the message
+                            final JDialog dialog = new JDialog();
+                            dialog.setTitle("Alert");
+                            dialog.setModal(false); // Make it non-modal
+                            dialog.setSize(300, 100);
+                            dialog.setLayout(new FlowLayout());
+                            dialog.add(new JLabel("Your pet is tired! Sleep is very low"));
+                            dialog.setLocationRelativeTo(null); // Center on screen
 
-                        // Set a timer to close the dialog automatically after 3 seconds
-                        new Timer(3000, new ActionListener() {
-                            public void actionPerformed(ActionEvent e) {
-                                dialog.dispose();
-                            }
-                        }).start();
+                            // Set a timer to close the dialog automatically after 3 seconds
+                            new Timer(3000, new ActionListener() {
+                                public void actionPerformed(ActionEvent e) {
+                                    dialog.dispose();
+                                }
+                            }).start();
 
-                        dialog.setVisible(true);
-                    });
+                            dialog.setVisible(true);
+                        });
+
+                    }
                 }
                 break;
             default:
