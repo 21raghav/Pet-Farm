@@ -142,7 +142,9 @@ public class MainScreen extends JFrame {
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Fox(new FoxAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
-//                    dispose(); // Close the pet selection window
+                    dispose(); // Close the pet selection window
+                    new MainScreen();
+
                 }
                 else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (800 * yScale), (int) (500 * xScale), (int) (600 * yScale))) {
                     // Top left animal in Pet Selection screen
@@ -152,7 +154,9 @@ public class MainScreen extends JFrame {
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Dog(new DogAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
-//                    dispose(); // Close the pet selection window
+                    dispose(); // Close the pet selection window
+                    new MainScreen();
+
                 }
 
                 else if (isWithinBounds(x, y, (int) (600 * xScale), (int) (600 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
@@ -163,7 +167,8 @@ public class MainScreen extends JFrame {
                     ButtonUtils.playSound(clickSoundPath); // Play sound
                     Pet selectedPet = new Cat(new CatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
-//                    dispose(); // Close the pet selection window
+                    dispose(); // Close the pet selection window
+                    new MainScreen();
                 }
 
                 else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (600 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
@@ -175,6 +180,8 @@ public class MainScreen extends JFrame {
                     Pet selectedPet = new Rat(new RatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
                     dispose(); // Close the pet selection window
+                    new MainScreen();
+
                 }
                 else if (isWithinBounds(x, y, (int) (1400 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (200 * yScale))) {
                     ButtonUtils.playSound(clickSoundPath); // Play sound on "Go Back" button click in Load Game Menu

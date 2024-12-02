@@ -60,7 +60,7 @@ public class ParentalControlsScreen {
         passwordField.setFont(new Font("Arial", Font.PLAIN, 18));
         passwordField.setOpaque(false);
         passwordField.setBorder(BorderFactory.createEmptyBorder());
-        passwordField.setBounds(screenSize.width / 2 - 10, screenSize.height / 2 , 300, 110);
+        passwordField.setBounds(screenSize.width / 2 - 10, screenSize.height / 2 , 300, 168);
         frame.add(passwordField);
 
         // Add invisible button for "Enter Password"

@@ -7,6 +7,7 @@ import Pets.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ public class GameMenu extends JFrame {
     private String saveFileName;
 
     public GameMenu(Pet petToSpawn) {
+
         this.petToSpawn = petToSpawn; // Save the pet instance for save functionality
 
         Map<String,String> data = this.loadData();
@@ -119,6 +121,7 @@ public class GameMenu extends JFrame {
         });
 
         mainPanel.add(saveButton); // Add the button to your panel
+
 
         //pet spawn
         JPanel character = petToSpawn.getAnimationPanel();
