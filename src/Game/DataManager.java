@@ -175,14 +175,37 @@ public class DataManager {
 
             newData.put("orange", "0");
             newData.put("banana", "0");
-            newData.put("sleep", "50");
             newData.put("apple", "0");
             newData.put("bbone", "0");
-            newData.put("happiness", "50");
             newData.put("strawberry", "0");
-            newData.put("health", "50");
             newData.put("ybone", "0");
-            newData.put("hunger", "50");
+
+            switch(fileName) {
+                case ("slot1.csv"):
+                    newData.put("happiness", "100");
+                    newData.put("sleep", "50");
+                    newData.put("health", "50");
+                    newData.put("hunger", "50");
+                    break;
+                case ("slot2.csv"):
+                    newData.put("happiness", "50");
+                    newData.put("sleep", "100");
+                    newData.put("health", "50");
+                    newData.put("hunger", "50");
+                    break;
+                case ("slot3.csv"):
+                    newData.put("happiness", "50");
+                    newData.put("sleep", "50");
+                    newData.put("health", "100");
+                    newData.put("hunger", "50");
+                    break;
+                case ("slot4.csv"):
+                    newData.put("happiness", "50");
+                    newData.put("sleep", "50");
+                    newData.put("health", "50");
+                    newData.put("hunger", "100");
+                    break;
+            }
 
             DataManager.saveState(fileName, newData);
         }

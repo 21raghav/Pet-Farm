@@ -121,7 +121,7 @@ public class MainScreen extends JFrame {
                         changeImage("Assets/GameImages/LoadGame.png", "Load Game Menu");
                     }
                     else {
-                        JOptionPane.showMessageDialog(frame, "Can't");
+                        JOptionPane.showMessageDialog(frame, "Parental restrictions do not allow gameplay at this moment.");
                     }
                 }
                 else if (isWithinBounds(x, y, (int) (700 * xScale), (int) (450 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
