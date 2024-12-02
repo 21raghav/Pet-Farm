@@ -221,11 +221,11 @@ public class Questions extends JFrame {
             else {
                 JOptionPane.showMessageDialog(Questions.this, "Incorrect!");
                 if(type == 1){
-                    stats.updateState(1, -20);
+                    stats.updateState(1, -15);
                     stats.updateState(2, -20);
                 }
                 if(type == 2){
-                    stats.updateState(3, -20);
+                    stats.updateState(3, -25);
                 }
                 if(type == 3){
                     stats.updateState(0, -20);

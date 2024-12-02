@@ -1,22 +1,18 @@
 package UI;
 
-import Animation.CatAnimation;
+
 import Game.DataManager;
 import Pets.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
 
 public class GameMenu extends JFrame {
     private Image backgroundImage;
@@ -42,8 +38,7 @@ public class GameMenu extends JFrame {
 
     private statistics stats; // Reference to the statistics class
     private Inventory inventory; // Reference to the Inventory class
-//    private final JButton sleepButton; // New variable for the sleep button
-    private final JButton vetButton; // New variable for the vet button
+    //    private final JButton sleepButton; // New variable for the sleep button
     private final JButton question1Button; // New variable for Question 1 button
     private final JButton question2Button; // New variable for Question 2 button
     private final Pet petToSpawn;
@@ -93,8 +88,20 @@ public class GameMenu extends JFrame {
                 super.paintComponent(g);
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the background image
                 stats.drawStats(g, getWidth(), getHeight()); // Draw the statistics
-                }
+            }
         };
+
+        Timer decreaseAll = new Timer(10000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                stats.updateState(1,-5);
+                stats.updateState(2,-3);
+                stats.updateState(3,-4);
+
+            }
+        });
+
+        decreaseAll.setRepeats(true); // Ensure the timer continues to repeat
+        decreaseAll.start(); // Start the timer
 
         mainPanel.setLayout(null);
 
@@ -111,7 +118,7 @@ public class GameMenu extends JFrame {
             JOptionPane.showMessageDialog(this, "Game saved!");
         });
 
-    mainPanel.add(saveButton); // Add the button to your panel
+        mainPanel.add(saveButton); // Add the button to your panel
 
         //pet spawn
         JPanel character = petToSpawn.getAnimationPanel();
@@ -149,7 +156,6 @@ public class GameMenu extends JFrame {
             petToSpawn.stopWalking();
         }
 
-
         character.setBounds(100, 100, character.getPreferredSize().width, character.getPreferredSize().height);
         mainPanel.add(character);
 
@@ -177,10 +183,9 @@ public class GameMenu extends JFrame {
 
         // Initialize the sleep button
         // New variable for the sleep button
-        JButton sleepButton = new JButton("Sleep");
-        sleepButton.setVisible(true); // Initially hidden
         ImageIcon petIcon = new ImageIcon(petImage); // Wrap the image in an ImageIcon
-        sleepButton = new JButton(petIcon); // Initialize the petShelter button
+        JButton sleepButton = new JButton(petIcon); // Initialize the petShelter button
+        sleepButton.setVisible(true); // Initially hidden
         sleepButton.setVisible(true);
         sleepButton.setBounds(550, 300, petIcon.getIconWidth(), petIcon.getIconHeight()); // position and size
         sleepButton.setBorderPainted(false); // Do not paint the border
@@ -192,15 +197,17 @@ public class GameMenu extends JFrame {
         // Action listener for the sleep button
         sleepButton.addActionListener(e -> {
             try {
-                this.dispose();
-                new PetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
-        }
-            catch(Exception error) { error.printStackTrace();}
-            //mainPanel.requestFocusInWindow();  // regain focus after interaction
-        });
+                if(stats.getHappiness() > 0){
+                    this.dispose();
+                    new PetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+                }
+            }
+                catch(Exception error) { error.printStackTrace();}
+                //mainPanel.requestFocusInWindow();  // regain focus after interaction
+            });
 
         ImageIcon vet = new ImageIcon(vetImage);
-        vetButton = new JButton(vet);
+        JButton vetButton = new JButton(vet);
         vetButton.setVisible(true);
         vetButton.setBounds(150, 300, vet.getIconWidth(), vet.getIconHeight());
         vetButton.setBorderPainted(false); // Do not paint the border
@@ -211,8 +218,10 @@ public class GameMenu extends JFrame {
 
         vetButton.addActionListener(e -> {
             try {
-                this.dispose();
-                new VetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+                if(stats.getHappiness() > 0) {
+                    this.dispose();
+                    new VetShelter(this.petToSpawn, new statistics(this.saveFileName, this.loadData(), statBarImage, healthIcon, happyIcon, foodIcon, sleepIcon, this));
+                }
             } catch(Exception error) { error.printStackTrace();}
 //            mainPanel.repaint();
         });
@@ -232,31 +241,21 @@ public class GameMenu extends JFrame {
             question1Button.setEnabled(false);  // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory, stats, 1); // Open the Questions window !! TYPE 1 = GAMEMENU
             mainPanel.requestFocusInWindow();  // Regain focus after interaction
+            mainPanel.repaint();
 
-            // Timer to re-enable the button after 30 seconds (30000 milliseconds)
-            Timer enableButtonTimer = new Timer(30000, event -> {
+            // Timer to re-enable the button after 15 seconds (15000 milliseconds)
+            Timer enableButtonTimer = new Timer(15000, event -> {
                 question1Button.setEnabled(true);  // Re-enable the button after 30 seconds
             });
             enableButtonTimer.setRepeats(false);  // Ensure the timer only runs once
             enableButtonTimer.start();  // Start the timer
-
-            // Add a WindowListener to the questionsWindow to detect when it is closed
-            questionsWindow.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    // Do not re-enable the button here to ensure 30 seconds must pass
-                    enableButtonTimer.stop();  // Stop the timer if the window closes early
-                }
-            });
         });
-
-
 
         // Initialize the Question 2 button
         ImageIcon questionIcon2 = new ImageIcon(questionImage);
         question2Button = new JButton(questionIcon2);
         question2Button.setVisible(true);
-        question2Button.setBounds(getWidth() - 300, (getHeight() - 30) / 2, questionIcon2.getIconWidth(), questionIcon2.getIconHeight()); //position/size
+        question2Button.setBounds(getWidth() - 3000, (getHeight() - 30) / 2, questionIcon2.getIconWidth(), questionIcon2.getIconHeight()); //position/size
         question2Button.setBorderPainted(false); // Do not paint the border
         question2Button.setContentAreaFilled(false); // Do not fill the content area
         question2Button.setFocusPainted(false); // Do not paint the focus indicator
@@ -269,22 +268,13 @@ public class GameMenu extends JFrame {
             question2Button.setEnabled(false);  // Disable the button to prevent re-clicks
             Questions questionsWindow = new Questions(inventory, stats, 1); // Open the Questions window !! TYPE 1 = GAMEMENU
             mainPanel.requestFocusInWindow();  // Regain focus after interaction
-
-            // Timer to re-enable the button after 30 seconds (30000 milliseconds)
-            Timer enableButtonTimer = new Timer(30000, event -> {
+            mainPanel.repaint();
+            // Timer to re-enable the button after 15 seconds (15000 milliseconds)
+            Timer enableButtonTimer = new Timer(15000, event -> {
                 question2Button.setEnabled(true);  // Re-enable the button after 30 seconds
             });
             enableButtonTimer.setRepeats(false);  // Ensure the timer only runs once
             enableButtonTimer.start();  // Start the timer
-
-            // Add a WindowListener to the questionsWindow to detect when it is closed
-            questionsWindow.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    // Do not re-enable the button here to ensure 30 seconds must pass
-                    enableButtonTimer.stop();  // Stop the timer if the window closes early
-                }
-            });
         });
 
         // Component listeners for resizing and button updates

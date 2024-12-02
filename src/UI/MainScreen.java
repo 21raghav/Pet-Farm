@@ -39,6 +39,31 @@ public class MainScreen extends JFrame {
         setSize(1920, 1080); // Default resolution set to 1920x1080
         setLayout(null);
 
+        // Add the text in the bottom-right corner
+        JLabel bottomRightLabel = new JLabel("<html>Developers: Arya Zarei, Raghav Gulati, Karl Seryani, Mark Samwaiel, Tarik Samer Alansari<br>" +
+                "Team Number: 24<br>" +
+                "Term: Fall 2024<br>" +
+                "Created as part of CS2212 at Western University</html>");
+        bottomRightLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        bottomRightLabel.setForeground(Color.BLACK);
+        bottomRightLabel.setBounds(getWidth() - 420, getHeight() - 120, 400, 100);
+        add(bottomRightLabel);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int panelWidth = 400;
+                int panelHeight = 200;
+                bottomRightLabel.setBounds(getWidth() - panelWidth - 20, getHeight() - panelHeight - 20, panelWidth, panelHeight);
+                bottomRightLabel.repaint();
+            }
+        });
+
+        // Ensure the text label is on top of the background
+        bottomRightLabel.setVisible(true);
+        imageLabel.setVisible(true);
+        setVisible(true);
+
+
         // Set the bounds of the image label and add it to the frame
         imageLabel.setBounds(0, 0, 1920, 1080); // Cover the entire screen
         add(imageLabel);
@@ -109,7 +134,7 @@ public class MainScreen extends JFrame {
                     Pet selectedPet = new Fox(new FoxAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
                 }
-                else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
+                else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (800 * yScale), (int) (500 * xScale), (int) (600 * yScale))) {
                     // Top left animal in Pet Selection screen
                     if (!isLoadGame) {
                         DataManager.resetState("slot1.csv");

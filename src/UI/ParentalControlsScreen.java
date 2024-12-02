@@ -1,11 +1,11 @@
 package UI;
 
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
 
 public class ParentalControlsScreen {
     private JFrame frame;
@@ -23,6 +23,8 @@ public class ParentalControlsScreen {
     private int totalPlayTime = 0; // Placeholder for total playtime in hours
     private int sessionCount = 1;  // Placeholder for session count
     private static final String HARDCODED_PASSWORD = "myPassword";
+    private String startTime;
+    private String endTime;
 
     // List of pets
     private List<Pet> pets = new ArrayList<>();
@@ -54,7 +56,7 @@ public class ParentalControlsScreen {
         passwordField.setFont(new Font("Arial", Font.PLAIN, 18));
         passwordField.setOpaque(false);
         passwordField.setBorder(BorderFactory.createEmptyBorder());
-        passwordField.setBounds(screenSize.width / 2 - 10, screenSize.height / 2 , 300, 110);
+        passwordField.setBounds(screenSize.width / 2 - 10, screenSize.height / 2 , 300, 150);
         frame.add(passwordField);
 
         // Add invisible button for "Enter Password"
@@ -182,15 +184,31 @@ public class ParentalControlsScreen {
         frame.repaint();
     }
 
-    private void setPlaytimeRestrictions() {
+    public void setPlaytimeRestrictions() {
         if (enableRestrictionsCheckBox.isSelected()) {
-            String startTime = startTimeField.getText();
-            String endTime = endTimeField.getText();
+            startTime = startTimeField.getText();
+            endTime = endTimeField.getText();
             // Implement logic to set playtime restrictions
             JOptionPane.showMessageDialog(frame, "Playtime restrictions set from " + startTime + " to " + endTime);
         } else {
             JOptionPane.showMessageDialog(frame, "Playtime restrictions disabled.");
         }
+    }
+
+    public void setStartTime(String startTime){
+            this.startTime = startTime;
+    }
+
+    public void setEndTime(String endTime){
+        this.endTime = endTime;
+    }
+
+    public String getStartTime(){
+        return this.startTime;
+    }
+
+    public String getEndTime(){
+        return this.endTime;
     }
 
     private void resetStatistics() {

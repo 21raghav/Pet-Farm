@@ -97,6 +97,9 @@ public class statistics {
                 setHunger(Math.min(100, Math.max(0, hunger + increment)));
                 this.data.put("hunger", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("hunger")) + increment))));
                 gameMenu.repaint();
+                if(getHunger() == 0){
+                    updateState(1, -25);
+                }
                 if (getHunger() <= 25) {
                     SwingUtilities.invokeLater(() -> {
                         // Create a non-modal dialog to show the message
@@ -123,6 +126,9 @@ public class statistics {
                 setSleep(Math.min(100, Math.max(0, sleep + increment)));
                 this.data.put("sleep", String.valueOf(Math.min(100, Math.max(0, Integer.parseInt(data.get("sleep")) + increment))));
                 gameMenu.repaint();
+                if(getSleep() == 0){
+                    updateState(0, -25);
+                }
                 if (getSleep() <= 25) {
                     SwingUtilities.invokeLater(() -> {
                         // Create a non-modal dialog to show the message
