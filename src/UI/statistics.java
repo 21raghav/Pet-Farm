@@ -179,6 +179,10 @@ public class statistics {
         g.drawImage(sleepIcon, statBarX + statBarWidth + 5, statBarY, null);
     }
 
+    public int getScore(){
+        return getSleep() + getHappiness() + getHealth() + getHunger();
+    }
+
     public void setHealth(int health) {
         this.health =  health;
     }
