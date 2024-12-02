@@ -62,8 +62,8 @@ public class statistics {
                             dialog.add(new JLabel("Your pet is hurt! Health is very low"));
                             dialog.setLocationRelativeTo(null); // Center on screen
 
-                            // Set a timer to close the dialog automatically after 3 seconds
-                            new Timer(3000, new ActionListener() {
+                            // Set a timer to close the dialog automatically after 2 seconds
+                            new Timer(2000, new ActionListener() {
                                 public void actionPerformed(ActionEvent e) {
                                     dialog.dispose();
                                 }
@@ -92,8 +92,8 @@ public class statistics {
                             dialog.add(new JLabel("Your pet is not happy! Happiness is very low"));
                             dialog.setLocationRelativeTo(null); // Center on screen
 
-                            // Set a timer to close the dialog automatically after 3 seconds
-                            new Timer(3000, new ActionListener() {
+                            // Set a timer to close the dialog automatically after 2 seconds
+                            new Timer(2000, new ActionListener() {
                                 public void actionPerformed(ActionEvent e) {
                                     dialog.dispose();
                                 }
@@ -125,8 +125,8 @@ public class statistics {
                                 dialog.add(new JLabel("Your pet is hungry! Hunger is very low"));
                                 dialog.setLocationRelativeTo(null); // Center on screen
 
-                                // Set a timer to close the dialog automatically after 3 seconds
-                                new Timer(3000, new ActionListener() {
+                                // Set a timer to close the dialog automatically after 2 seconds
+                                new Timer(2000, new ActionListener() {
                                     public void actionPerformed(ActionEvent e) {
                                         dialog.dispose();
                                     }
@@ -158,8 +158,8 @@ public class statistics {
                             dialog.add(new JLabel("Your pet is tired! Sleep is very low"));
                             dialog.setLocationRelativeTo(null); // Center on screen
 
-                            // Set a timer to close the dialog automatically after 3 seconds
-                            new Timer(3000, new ActionListener() {
+                            // Set a timer to close the dialog automatically after 2 seconds
+                            new Timer(2000, new ActionListener() {
                                 public void actionPerformed(ActionEvent e) {
                                     dialog.dispose();
                                 }

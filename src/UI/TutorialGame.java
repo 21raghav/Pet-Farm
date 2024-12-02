@@ -24,7 +24,6 @@ public class TutorialGame extends JFrame {
     private JButton[] answerButtons;
 
     private int currentObjective = 1;
-    private boolean questionAnsweredCorrectly = false; // Flag to track if the question is answered
 
     // Movement counters
     private final Map<String, Integer> movementCounts = new HashMap<>();
@@ -165,6 +164,18 @@ public class TutorialGame extends JFrame {
         for (int i = 0; i < answerButtons.length; i++) {
             answerButtons[i].setText(answers[i]);
             answerButtons[i].setVisible(true);
+
+            // Set button background colors
+            switch (i) {
+                case 0 -> answerButtons[i].setBackground(Color.RED);
+                case 1 -> answerButtons[i].setBackground(Color.BLUE);
+                case 2 -> answerButtons[i].setBackground(Color.YELLOW);
+                case 3 -> answerButtons[i].setBackground(Color.GREEN);
+            }
+
+            // Add additional styling
+            answerButtons[i].setForeground(Color.WHITE);
+            answerButtons[i].setFont(new Font("Arial", Font.BOLD, 16));
         }
     }
 
@@ -172,7 +183,17 @@ public class TutorialGame extends JFrame {
         for (int i = 0; i < 4; i++) {
             JButton button = new JButton();
             button.setFont(new Font("Arial", Font.BOLD, 16));
-            button.setBounds(150 + (i % 2) * 200, 400 + (i / 2) * 50, 150, 40);
+
+            // Adjust positioning for 2 rows and 2 columns
+            int buttonWidth = 150;
+            int buttonHeight = 50;
+            int horizontalSpacing = 20;
+            int verticalSpacing = 20;
+
+            int x = 300 + (i % 2) * (buttonWidth + horizontalSpacing); // Adjust for columns
+            int y = 300 + (i / 2) * (buttonHeight + verticalSpacing); // Adjust for rows
+
+            button.setBounds(x, y, buttonWidth, buttonHeight);
             button.setVisible(false); // Hidden initially
             button.addActionListener(new AnswerButtonListener(i));
             panel.add(button);
@@ -199,6 +220,9 @@ public class TutorialGame extends JFrame {
                     button.setVisible(false);
                 }
 
+                // Show a dialog box about stats adjustment
+                showStatsAdjustmentDialog(true);
+
                 // Open the dialog box with icons
                 showAllIconsDialog();
 
@@ -209,8 +233,26 @@ public class TutorialGame extends JFrame {
                 showHealthWarningDialog();
             } else {
                 JOptionPane.showMessageDialog(TutorialGame.this, "Incorrect! Try Again.");
+                // Show the stats adjustment dialog for incorrect answers
+                showStatsAdjustmentDialog(false);
             }
         }
+    }
+
+    private void showStatsAdjustmentDialog(boolean correctAnswer) {
+        String message;
+        if (correctAnswer) {
+            message = "Congratulations! Answering the question correctly increases your stats by 15, \n But be careful answering the question incorrectly decreases your stats by 20";
+        } else {
+            message = "Oh no! Answering the question incorrectly decreases your stats by 20.";
+        }
+
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Stats Adjustment",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void showAllIconsDialog() {
@@ -241,6 +283,81 @@ public class TutorialGame extends JFrame {
         );
     }
 
+    private JLabel createIconLabel(String iconPath) {
+        try {
+            // Load the original image
+            ImageIcon icon = new ImageIcon(ImageIO.read(new File(iconPath)));
+
+            // Scale the image to a fixed size (50x50 pixels)
+            Image scaledImage = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            return new JLabel(new ImageIcon(scaledImage));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new JLabel("Error loading image");
+        }
+    }
+
+    private void showFoodAndTreatDialog() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Vertical layout for clarity
+
+        // Title and descriptions
+        JLabel titleLabel = new JLabel("Food and Treats Available", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(titleLabel);
+
+        panel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing
+
+        JLabel descriptionLabel = new JLabel("Eating food increases hunger by 20. Eating treats increases happiness by 20.");
+        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(descriptionLabel);
+
+        panel.add(Box.createRigidArea(new Dimension(0, 15))); // Spacing
+
+        // Food section
+        JLabel foodLabel = new JLabel("Food", SwingConstants.LEFT);
+        foodLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        foodLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(foodLabel);
+
+        JPanel foodPanel = new JPanel();
+        foodPanel.setLayout(new BoxLayout(foodPanel, BoxLayout.X_AXIS)); // Horizontal layout for food
+        foodPanel.add(createFoodAndTreatPanel("Assets/Images/Strawberry.png", ""));
+        foodPanel.add(createFoodAndTreatPanel("Assets/Images/Orange.png", ""));
+        foodPanel.add(createFoodAndTreatPanel("Assets/Images/banana.png", ""));
+        foodPanel.add(createFoodAndTreatPanel("Assets/Images/Apple.png", ""));
+        panel.add(foodPanel);
+
+        panel.add(Box.createRigidArea(new Dimension(0, 15))); // Spacing
+
+        // Treats section
+        JLabel treatLabel = new JLabel("Treats", SwingConstants.LEFT);
+        treatLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        treatLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(treatLabel);
+
+        JPanel treatsPanel = new JPanel();
+        treatsPanel.setLayout(new BoxLayout(treatsPanel, BoxLayout.X_AXIS)); // Horizontal layout for treats
+        treatsPanel.add(createFoodAndTreatPanel("Assets/Images/Treat.png", ""));
+        treatsPanel.add(createFoodAndTreatPanel("Assets/Images/Treat2.png", ""));
+        panel.add(treatsPanel);
+
+        // Display the dialog
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setPreferredSize(new Dimension(500, 300)); // Adjust size as needed
+
+        JOptionPane.showMessageDialog(
+                this,
+                scrollPane,
+                "Food and Treats",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+
+
     private JPanel createFoodAndTreatPanel(String iconPath, String description) {
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.X_AXIS)); // Horizontal layout for each item
@@ -258,55 +375,10 @@ public class TutorialGame extends JFrame {
         return itemPanel;
     }
 
-    private void showFoodAndTreatDialog() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Vertical layout for a list-style dialog
-
-        // Add Treat 1
-        panel.add(createFoodAndTreatPanel("Assets/Images/Treat.png", "Treat 1: Increases happiness by 15"));
-
-        // Add Treat 2
-        panel.add(createFoodAndTreatPanel("Assets/Images/Treat2.png", "Treat 2: Increases happiness by 20"));
-
-        // Add Strawberry
-        panel.add(createFoodAndTreatPanel("Assets/Images/Strawberry.png", "Strawberry: Increases health by 15"));
-
-        // Add Orange
-        panel.add(createFoodAndTreatPanel("Assets/Images/Orange.png", "Orange: Increases health by 15"));
-
-        // Add Banana
-        panel.add(createFoodAndTreatPanel("Assets/Images/banana.png", "Banana: Increases health by 10"));
-
-        // Add Apple
-        panel.add(createFoodAndTreatPanel("Assets/Images/Apple.png", "Apple: Increases health by 20"));
-
-        // Display the dialog
-        JOptionPane.showMessageDialog(
-                this,
-                panel,
-                "Food and Treats Available",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-    }
-
-    private JLabel createIconLabel(String iconPath) {
-        try {
-            // Load the original image
-            ImageIcon icon = new ImageIcon(ImageIO.read(new File(iconPath)));
-
-            // Scale the image to a fixed size (50x50 pixels)
-            Image scaledImage = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-            return new JLabel(new ImageIcon(scaledImage));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new JLabel("Error loading image");
-        }
-    }
-
     private void showHealthWarningDialog() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Vertical layout for clarity
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the dialog
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 15)); // Add padding around the dialog
 
         // Health warning message
         JPanel warningPanel = new JPanel();
@@ -345,7 +417,7 @@ public class TutorialGame extends JFrame {
 
         // Add components to the main panel
         panel.add(warningPanel);
-        panel.add(Box.createRigidArea(new Dimension(0, 15))); // Add spacing between sections
+        panel.add(Box.createRigidArea(new Dimension(0, 20))); // Add spacing between sections
         panel.add(vetOptionLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 5))); // Small spacing
         panel.add(sleepOptionLabel);
@@ -360,7 +432,7 @@ public class TutorialGame extends JFrame {
 
         // Ensure proper size and visibility of the dialog
         JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.setPreferredSize(new Dimension(500, 300));
+        scrollPane.setPreferredSize(new Dimension(550, 300));
 
         // Display the dialog
         JOptionPane.showMessageDialog(
@@ -369,9 +441,18 @@ public class TutorialGame extends JFrame {
                 "Health and Game Features",
                 JOptionPane.INFORMATION_MESSAGE
         );
+
+        // End the tutorial here
+        endTutorial();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new TutorialGame(new Dog(new DogAnimation())).setVisible(true));
+    private void endTutorial() {
+        JOptionPane.showMessageDialog(
+                this,
+                "Tutorial completed! Returning to the main screen.",
+                "Tutorial Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+        dispose(); // Close the tutorial window
     }
 }

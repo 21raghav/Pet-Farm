@@ -11,7 +11,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.time.LocalTime;
 
@@ -135,24 +138,24 @@ public class MainScreen extends JFrame {
 
                 }
                 if (isWithinBounds(x, y, (int) (600 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
-                    // Top right animal in Pet Selection screen
+                    // Top left animal in Pet Selection screen
                     if (!isLoadGame) {
                         DataManager.resetState("slot3.csv");
                     }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
-                    Pet selectedPet = new Fox(new FoxAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
+                    Pet selectedPet = new Fox(new FoxAnimation());
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
                     dispose(); // Close the pet selection window
                     new MainScreen();
 
                 }
-                else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (800 * yScale), (int) (500 * xScale), (int) (600 * yScale))) {
-                    // Top left animal in Pet Selection screen
+                else if (isWithinBounds(x, y, (int) (1100 * xScale), (int) (200 * yScale), (int) (200 * xScale), (int) (200 * yScale))) {
+                    // Top right animal in Pet Selection screen
                     if (!isLoadGame) {
                         DataManager.resetState("slot1.csv");
                     }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
-                    Pet selectedPet = new Dog(new DogAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
+                    Pet selectedPet = new Dog(new DogAnimation());
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
                     dispose(); // Close the pet selection window
                     new MainScreen();
@@ -165,7 +168,7 @@ public class MainScreen extends JFrame {
                         DataManager.resetState("slot2.csv");
                     }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
-                    Pet selectedPet = new Cat(new CatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
+                    Pet selectedPet = new Cat(new CatAnimation());
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
                     dispose(); // Close the pet selection window
                     new MainScreen();
@@ -177,7 +180,7 @@ public class MainScreen extends JFrame {
                         DataManager.resetState("slot4.csv");
                     }
                     ButtonUtils.playSound(clickSoundPath); // Play sound
-                    Pet selectedPet = new Rat(new RatAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
+                    Pet selectedPet = new Rat(new RatAnimation());
                     SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));
                     dispose(); // Close the pet selection window
                     new MainScreen();
@@ -192,14 +195,6 @@ public class MainScreen extends JFrame {
                         Pet tutorialPet = new Dog(new DogAnimation());
                         new TutorialGame(tutorialPet).setVisible(true);
                     });
-
-
-
-                /*else if (isWithinBounds(x, y, (int) (835 * xScale), (int) (760 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
-                    ButtonUtils.playSound(clickSoundPath); // Play sound on "Tutorial" button click
-                    // Instead of changing the image, open the GameMenu
-                    Pet selectedPet = new Fox(new FoxAnimation()); // Replace 'Fox' with the appropriate class for the selected pet
-                    SwingUtilities.invokeLater(() -> new GameMenu(selectedPet));*/
                 }
                 else if (isWithinBounds(x, y, (int) (835 * xScale), (int) (920 * yScale), (int) (400 * xScale), (int) (120 * yScale))) {
                     ButtonUtils.playSound(clickSoundPath); // Play sound on "Parental" button click
