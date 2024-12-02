@@ -2,11 +2,9 @@ package Pets;
 
 import Animation.Animation;
 import Animation.AnimationState;
-
-import javax.swing.*;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.*;
 
 public abstract class Pet {
     private String name; // Store the pet's name
@@ -174,6 +172,6 @@ public abstract class Pet {
         if (x + dx < 0 || x + dx > 675) return;
         x += dx;
         y += dy;
-        animationPanel.setLocation(x, 150);
+        animationPanel.setLocation(x, 240);
     }
 }

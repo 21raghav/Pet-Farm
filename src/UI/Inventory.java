@@ -1,6 +1,7 @@
 package UI;
 
 import Game.DataManager;
+
 import java.awt.*;
 import java.util.Map;
 import javax.swing.*;
@@ -106,8 +107,8 @@ public class Inventory{
                     }
 
                     DataManager.saveState(this.saveFileName, this.data);
-
                     increaseStat(statIndices[index], 10); // Call to increaseStat
+
                 } else {
                     JOptionPane.showMessageDialog(inventoryDialog, "No more items left!", "Warning", JOptionPane.WARNING_MESSAGE);
                 }
@@ -157,6 +158,6 @@ public class Inventory{
 
             DataManager.saveState(saveFileName, data); // Save the updated state
         }
-    }    
+    }
 }
 

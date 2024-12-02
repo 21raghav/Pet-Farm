@@ -7,5 +7,5 @@ public class Fox extends Pet {
         super("Fox", animation); // Pass the Animation object and the name
     }
 
-    // Additional Fox-specific methods, if any
+
 }

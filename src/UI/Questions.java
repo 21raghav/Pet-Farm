@@ -106,6 +106,91 @@ public class Questions extends JFrame {
         questions.add("5 - 2 = ?");
         answersMap.put("5 - 2 = ?", new String[]{"2", "3", "4", "1"});
         correctAnswerIndexMap.put("5 - 2 = ?", 1);
+
+        // Question 4
+        questions.add("10 / 2 = ?");
+        answersMap.put("10 / 2 = ?", new String[]{"2", "5", "8", "10"});
+        correctAnswerIndexMap.put("10 / 2 = ?", 1);
+
+        // Question 5
+        questions.add("6 + 4 = ?");
+        answersMap.put("6 + 4 = ?", new String[]{"9", "12", "10", "8"});
+        correctAnswerIndexMap.put("6 + 4 = ?", 2);
+
+        // Question 6
+        questions.add("9 - 3 = ?");
+        answersMap.put("9 - 3 = ?", new String[]{"6", "5", "4", "3"});
+        correctAnswerIndexMap.put("9 - 3 = ?", 0);
+
+        // Question 7
+        questions.add("7 * 2 = ?");
+        answersMap.put("7 * 2 = ?", new String[]{"12", "14", "16", "10"});
+        correctAnswerIndexMap.put("7 * 2 = ?", 1);
+
+        // Question 8
+        questions.add("8 + 5 = ?");
+        answersMap.put("8 + 5 = ?", new String[]{"12", "14", "13", "11"});
+        correctAnswerIndexMap.put("8 + 5 = ?", 2);
+
+        // Question 9
+        questions.add("15 / 3 = ?");
+        answersMap.put("15 / 3 = ?", new String[]{"5", "3", "6", "4"});
+        correctAnswerIndexMap.put("15 / 3 = ?", 0);
+
+        // Question 10
+        questions.add("12 - 7 = ?");
+        answersMap.put("12 - 7 = ?", new String[]{"4", "5", "6", "3"});
+        correctAnswerIndexMap.put("12 - 7 = ?", 1);
+
+        // Question 11
+        questions.add("4 + 6 = ?");
+        answersMap.put("4 + 6 = ?", new String[]{"8", "9", "10", "11"});
+        correctAnswerIndexMap.put("4 + 6 = ?", 2);
+
+        // Question 12
+        questions.add("8 - 5 = ?");
+        answersMap.put("8 - 5 = ?", new String[]{"3", "4", "5", "2"});
+        correctAnswerIndexMap.put("8 - 5 = ?", 0);
+
+        // Question 13
+        questions.add("6 * 3 = ?");
+        answersMap.put("6 * 3 = ?", new String[]{"18", "16", "20", "15"});
+        correctAnswerIndexMap.put("6 * 3 = ?", 0);
+
+        // Question 14
+        questions.add("20 / 4 = ?");
+        answersMap.put("20 / 4 = ?", new String[]{"5", "4", "6", "3"});
+        correctAnswerIndexMap.put("20 / 4 = ?", 0);
+
+        // Question 15
+        questions.add("11 + 7 = ?");
+        answersMap.put("11 + 7 = ?", new String[]{"16", "17", "18", "19"});
+        correctAnswerIndexMap.put("11 + 7 = ?", 2);
+
+        // Question 16
+        questions.add("14 - 6 = ?");
+        answersMap.put("14 - 6 = ?", new String[]{"9", "8", "7", "6"});
+        correctAnswerIndexMap.put("14 - 6 = ?", 1);
+
+        // Question 17
+        questions.add("5 * 5 = ?");
+        answersMap.put("5 * 5 = ?", new String[]{"20", "25", "30", "15"});
+        correctAnswerIndexMap.put("5 * 5 = ?", 1);
+
+        // Question 18
+        questions.add("16 / 2 = ?");
+        answersMap.put("16 / 2 = ?", new String[]{"8", "6", "9", "7"});
+        correctAnswerIndexMap.put("16 / 2 = ?", 0);
+
+        // Question 19
+        questions.add("9 + 3 = ?");
+        answersMap.put("9 + 3 = ?", new String[]{"11", "13", "12", "14"});
+        correctAnswerIndexMap.put("9 + 3 = ?", 2);
+
+        // Question 20
+        questions.add("18 - 7 = ?");
+        answersMap.put("18 - 7 = ?", new String[]{"12", "11", "10", "9"});
+        correctAnswerIndexMap.put("18 - 7 = ?", 1);
     }
 
     private void selectRandomQuestion() {
@@ -124,27 +209,26 @@ public class Questions extends JFrame {
                 if(type == 1){
                     int randomIndex = random.nextInt(6);  // Generate a random index between 0 and 5
                     inventory.updateItemCount(randomIndex, 1);  // Assuming you want to increase the first item in the inventory
-
                 }
                 if(type == 2){
-                    stats.updateState(3, 20);
+                    stats.updateState(3, 15);
                 }
                 if(type == 3) {
-                    stats.updateState(0, 20);
+                    stats.updateState(0, 15);
                     
                 }
             }
             else {
                 JOptionPane.showMessageDialog(Questions.this, "Incorrect!");
                 if(type == 1){
-                    stats.updateState(1, -5);
-                    stats.updateState(2, -5);
+                    stats.updateState(1, -20);
+                    stats.updateState(2, -20);
                 }
                 if(type == 2){
-                    stats.updateState(3, -5);
+                    stats.updateState(3, -20);
                 }
                 if(type == 3){
-                    stats.updateState(0, -5);
+                    stats.updateState(0, -20);
                 }
             }
             dispose();  // Close the questions window
