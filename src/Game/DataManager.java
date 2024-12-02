@@ -158,20 +158,34 @@ public class DataManager {
     }
 
     public static void resetState(String fileName) {
-        var newData = new HashMap<String, String>();
+        if (fileName.toLowerCase().equals("restrictions.csv")) {
+            var newData = new HashMap<String, String>();
 
-        newData.put("orange", "0");
-        newData.put("banana", "0");
-        newData.put("sleep", "50");
-        newData.put("apple", "0");
-        newData.put("bbone", "0");
-        newData.put("happiness", "50");
-        newData.put("strawberry", "0");
-        newData.put("health", "50");
-        newData.put("ybone", "0");
-        newData.put("hunger", "50");
+            newData.put("StartTime", "Not set");
+            newData.put("EndTime", "Not set");
+            newData.put("Total", "00:00");
+            newData.put("Average", "00:00");
+            newData.put("Times", "0");
 
-        DataManager.saveState(fileName, newData);
+            DataManager.saveState(fileName, newData);
+        }
+        else {
+
+            var newData = new HashMap<String, String>();
+
+            newData.put("orange", "0");
+            newData.put("banana", "0");
+            newData.put("sleep", "50");
+            newData.put("apple", "0");
+            newData.put("bbone", "0");
+            newData.put("happiness", "50");
+            newData.put("strawberry", "0");
+            newData.put("health", "50");
+            newData.put("ybone", "0");
+            newData.put("hunger", "50");
+
+            DataManager.saveState(fileName, newData);
+        }
     }
 
     /**
