@@ -167,13 +167,13 @@ public class GameMenu extends JFrame {
         JLabel scoreLabel = new JLabel();
         scoreLabel.setHorizontalAlignment(JLabel.CENTER); // Center align text
         scoreLabel.setVerticalAlignment(JLabel.TOP);
-        scoreLabel.setFont(new Font("Serif", Font.BOLD, 40)); // Set font size and style
+        scoreLabel.setFont(new Font("Serif", Font.BOLD, 30)); // Set font size and style
         scoreLabel.setForeground(Color.BLACK); // Set text color to white
         // Set the initial score
         int initialScore = stats.getScore(); // Assuming stats has a method getScore()
         scoreLabel.setText("Score: " + initialScore);
         // Position the score label at the middle right of the panel
-        scoreLabel.setBounds(backgroundImage.getWidth() / 2, backgroundImage.getHeight()/2, 300, 300);
+        scoreLabel.setBounds(680, 95, 300, 300);
         mainPanel.add(scoreLabel); // Add the score label to your panel
         // Timer to update the score label every second (1000 milliseconds)
         Timer scoreUpdater = new Timer(1000, e -> {
